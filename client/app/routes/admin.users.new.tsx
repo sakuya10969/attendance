@@ -15,7 +15,7 @@ import {
   useUsersControllerCreate,
 } from "~/shared/api/endpoints/users/users";
 import { CreateUserDtoRole } from "~/shared/api/model";
-import { PageLayout } from "~/shared/components/page-layout";
+import { PageLayout } from "~/shared/ui/layout/page-layout";
 
 export default function AdminUsersNewRoute() {
   const navigate = useNavigate();
@@ -40,7 +40,10 @@ export default function AdminUsersNewRoute() {
   });
 
   return (
-    <PageLayout title="ユーザー作成">
+    <PageLayout
+      title="ユーザー作成"
+      description="メールアドレス、氏名、ロールを指定して追加します。"
+    >
       <Card className="page-card" maw={720}>
         <form
           onSubmit={(event) => {

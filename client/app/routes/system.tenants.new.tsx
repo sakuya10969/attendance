@@ -9,7 +9,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 
 import { useTenantsControllerCreate } from "~/shared/api/endpoints/tenants/tenants";
-import { PageLayout } from "~/shared/components/page-layout";
+import { PageLayout } from "~/shared/ui/layout/page-layout";
 
 export default function SystemTenantsNewRoute() {
   const navigate = useNavigate();
@@ -41,7 +41,10 @@ export default function SystemTenantsNewRoute() {
   }
 
   return (
-    <PageLayout title="テナント作成">
+    <PageLayout
+      title="テナント作成"
+      description="テナント情報と初期管理者をまとめて登録します。"
+    >
       <Card className="page-card" maw={720}>
         <form onSubmit={handleSubmit}>
           <Stack gap="md">

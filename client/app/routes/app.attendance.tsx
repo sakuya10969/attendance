@@ -7,15 +7,15 @@ import {
   useAttendanceControllerGetMySummary,
 } from "~/shared/api/endpoints/attendance/attendance";
 import type { AttendanceListItemResponseDto } from "~/shared/api/model";
-import { LoadingState } from "~/shared/components/data-state";
-import { DataTable } from "~/shared/components/data-table";
-import { PageLayout } from "~/shared/components/page-layout";
-import { StatusBadge } from "~/shared/components/status-badge";
 import {
   formatDate,
   formatMinutes,
   formatTime,
 } from "~/shared/lib/format";
+import { DataTable } from "~/shared/ui/data-display/data-table";
+import { StatusBadge } from "~/shared/ui/data-display/status-badge";
+import { LoadingState } from "~/shared/ui/feedback/data-state";
+import { PageLayout } from "~/shared/ui/layout/page-layout";
 
 const today = new Date();
 
@@ -86,7 +86,10 @@ export default function AppAttendanceRoute() {
   const summary = summaryQuery.data;
 
   return (
-    <PageLayout title="勤怠一覧">
+    <PageLayout
+      title="勤怠一覧"
+      description="当月の勤務実績と集計を確認できます。"
+    >
       {summary ? (
         <SimpleGrid cols={{ base: 2, md: 5 }}>
           <Card className="kpi-card">

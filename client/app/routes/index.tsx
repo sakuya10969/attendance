@@ -1,8 +1,8 @@
 import { Center, Loader } from "@mantine/core";
 import { Navigate } from "react-router";
 
-import { roleHomeMap } from "~/shared/auth/role";
-import { useAuth } from "~/shared/auth/use-auth";
+import { roleHomeMap } from "~/shared/session/model/role";
+import { useAuth } from "~/shared/session/model/use-auth";
 
 export default function IndexRoute() {
   const { appUser, isAuthenticated, isInitializing } = useAuth();

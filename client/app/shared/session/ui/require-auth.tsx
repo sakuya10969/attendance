@@ -1,9 +1,9 @@
 import { Center, Loader } from "@mantine/core";
 import { Navigate, useLocation } from "react-router";
 
-import { canAccessPath, roleHomeMap } from "../auth/role";
-import { useAuth } from "../auth/use-auth";
-import type { AppRole } from "../auth/types";
+import { canAccessPath, roleHomeMap } from "../model/role";
+import type { AppRole } from "../model/types";
+import { useAuth } from "../model/use-auth";
 
 export function RequireAuth({
   roles,

@@ -1,4 +1,4 @@
-import type { MeResponseDto } from "../api/model";
+import type { MeResponseDto } from "~/shared/api/model";
 
 export type AppRole = MeResponseDto["role"];
 
@@ -7,7 +7,8 @@ export interface AuthContextValue {
   appUser: MeResponseDto | null;
   isInitializing: boolean;
   isAuthenticated: boolean;
-  signIn: (email: string, password: string) => Promise<void>;
+  signInWithPassword: (email: string, password: string) => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
   refreshAppUser: () => Promise<void>;
 }

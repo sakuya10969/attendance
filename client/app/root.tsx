@@ -15,14 +15,18 @@ import {
 import { QueryClientProvider } from "@tanstack/react-query";
 
 import type { Route } from "./+types/root";
-import { AuthProvider } from "./shared/auth/auth-provider";
+import { AuthProvider } from "./shared/session/model/auth-provider";
 import { queryClient } from "./shared/lib/query-client";
 import "./app.css";
+import '@mantine/core/styles.css';
 
 const theme = createTheme({
   primaryColor: "blue",
-  fontFamily: "Inter, sans-serif",
+  fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif",
+  fontFamilyMonospace: '"JetBrains Mono", ui-monospace, monospace',
   defaultRadius: "sm",
+  white: "#ffffff",
+  black: "#212529",
   colors: {
     blue: [
       "#e7f0ff",
@@ -37,36 +41,43 @@ const theme = createTheme({
       "#042159",
     ],
   },
-  primaryShade: 5,
+  headings: {
+    fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif",
+    fontWeight: "700",
+  },
   components: {
     Button: {
-      defaultProps: {
-        radius: "sm",
-      },
+      defaultProps: { radius: "sm" },
+      styles: { root: { fontWeight: 600 } },
     },
-    Input: {
-      defaultProps: {
-        radius: "sm",
-      },
-    },
+    TextInput: { defaultProps: { radius: "sm" } },
+    PasswordInput: { defaultProps: { radius: "sm" } },
+    Select: { defaultProps: { radius: "sm" } },
+    DatePickerInput: { defaultProps: { radius: "sm" } },
+    Textarea: { defaultProps: { radius: "sm" } },
     Card: {
-      defaultProps: {
-        radius: "sm",
-        withBorder: true,
-        shadow: "none",
-      },
+      defaultProps: { radius: "md", withBorder: true, shadow: "none", padding: "lg" },
     },
     Table: {
-      defaultProps: {
-        striped: true,
-        highlightOnHover: true,
-      },
+      defaultProps: { striped: true, highlightOnHover: true, verticalSpacing: "sm" },
     },
     Badge: {
-      defaultProps: {
-        radius: "sm",
-        variant: "light",
-      },
+      defaultProps: { radius: "sm", variant: "light" },
+    },
+    Modal: {
+      defaultProps: { radius: "md", centered: true },
+    },
+    Notification: {
+      defaultProps: { radius: "sm" },
+    },
+    Pagination: {
+      defaultProps: { radius: "sm" },
+    },
+    Menu: {
+      defaultProps: { radius: "sm", shadow: "md" },
+    },
+    Tabs: {
+      defaultProps: { radius: "sm" },
     },
   },
 });
@@ -133,16 +144,23 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   }
 
   return (
-    <main className="error-shell">
-      <section className="error-card">
+    <main
+      style={{
+        minHeight: "100vh",
+        display: "grid",
+        placeItems: "center",
+        padding: 24,
+      }}
+    >
+      <div style={{ maxWidth: 440 }}>
         <h1>{message}</h1>
         <p>{details}</p>
         {stack ? (
-          <pre>
+          <pre style={{ overflow: "auto", fontSize: 12 }}>
             <code>{stack}</code>
           </pre>
         ) : null}
-      </section>
+      </div>
     </main>
   );
 }

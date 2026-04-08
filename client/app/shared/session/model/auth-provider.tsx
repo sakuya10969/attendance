@@ -1,19 +1,24 @@
-import { createContext, useEffect, useMemo, useState } from "react";
+import { notifications } from "@mantine/notifications";
+import axios from "axios";
 import {
+  GoogleAuthProvider,
   onAuthStateChanged,
   signInWithEmailAndPassword,
+  signInWithPopup,
   signOut as firebaseSignOut,
   type User,
 } from "firebase/auth";
-import { notifications } from "@mantine/notifications";
-import axios from "axios";
+import { createContext, useEffect, useMemo, useState } from "react";
 
 import { auth } from "~/lib/firebase";
-import { authControllerMe } from "../api/endpoints/auth/auth";
-import type { MeResponseDto } from "../api/model";
+import { authControllerMe } from "~/shared/api/endpoints/auth/auth";
+import type { MeResponseDto } from "~/shared/api/model";
+
 import type { AuthContextValue } from "./types";
 
 export const AuthContext = createContext<AuthContextValue | null>(null);
+
+const googleProvider = new GoogleAuthProvider();
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [firebaseUser, setFirebaseUser] = useState<User | null>(null);
@@ -60,8 +65,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       appUser,
       isInitializing,
       isAuthenticated: Boolean(firebaseUser && appUser),
-      async signIn(email, password) {
+      async signInWithPassword(email, password) {
         await signInWithEmailAndPassword(auth, email, password);
+      },
+      async signInWithGoogle() {
+        await signInWithPopup(auth, googleProvider);
       },
       async signOut() {
         await firebaseSignOut(auth);

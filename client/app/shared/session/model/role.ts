@@ -7,17 +7,13 @@ export const roleHomeMap: Record<AppRole, string> = {
 };
 
 export function canAccessPath(role: AppRole, pathname: string) {
-  if (pathname.startsWith("/system")) {
-    return role === "system_admin";
+  if (role === "system_admin") {
+    return pathname.startsWith("/system/");
   }
 
-  if (pathname.startsWith("/admin")) {
-    return role === "tenant_admin";
+  if (role === "tenant_admin") {
+    return pathname.startsWith("/admin/");
   }
 
-  if (pathname.startsWith("/app")) {
-    return role === "tenant_user";
-  }
-
-  return true;
+  return pathname.startsWith("/app/");
 }

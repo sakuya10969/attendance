@@ -1,21 +1,20 @@
 import { Badge } from "@mantine/core";
 
 const colorMap: Record<string, string> = {
-  active: "green",
+  active: "teal",
   suspended: "red",
-  approved: "green",
+  approved: "teal",
   pending: "yellow",
   rejected: "red",
   working: "blue",
-  completed: "green",
+  completed: "teal",
   holiday: "grape",
   absent: "gray",
-  reopened: "yellow",
-  closed: "green",
+  closed: "teal",
   tenant_admin: "blue",
   tenant_user: "gray",
   system_admin: "dark",
-  true: "green",
+  true: "teal",
   false: "gray",
 };
 
@@ -29,7 +28,6 @@ const labelMap: Record<string, string> = {
   completed: "退勤済み",
   holiday: "休暇",
   absent: "欠勤",
-  reopened: "再開",
   closed: "締め済み",
   tenant_admin: "管理者",
   tenant_user: "一般",
@@ -46,7 +44,7 @@ export function StatusBadge({
   const normalized = String(value);
 
   return (
-    <Badge color={colorMap[normalized] ?? "gray"}>
+    <Badge variant="light" color={colorMap[normalized] ?? "gray"}>
       {labelMap[normalized] ?? normalized}
     </Badge>
   );

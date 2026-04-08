@@ -17,10 +17,10 @@ import {
   useTenantsControllerFindOne,
   useTenantsControllerUpdate,
 } from "~/shared/api/endpoints/tenants/tenants";
-import { LoadingState } from "~/shared/components/data-state";
-import { PageLayout } from "~/shared/components/page-layout";
-import { StatusBadge } from "~/shared/components/status-badge";
 import { formatDateTime } from "~/shared/lib/format";
+import { StatusBadge } from "~/shared/ui/data-display/status-badge";
+import { LoadingState } from "~/shared/ui/feedback/data-state";
+import { PageLayout } from "~/shared/ui/layout/page-layout";
 
 export default function SystemTenantDetailRoute() {
   const { id = "" } = useParams();
@@ -55,7 +55,10 @@ export default function SystemTenantDetailRoute() {
   const currentName = name || tenant.name;
 
   return (
-    <PageLayout title="テナント詳細">
+    <PageLayout
+      title="テナント詳細"
+      description="テナントの状態確認と基本情報の更新を行います。"
+    >
       <SimpleGrid cols={{ base: 1, md: 3 }}>
         <Card className="page-card">
           <Stack gap="xs">

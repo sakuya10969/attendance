@@ -20,11 +20,11 @@ import {
   useTenantsControllerSuspend,
 } from "~/shared/api/endpoints/tenants/tenants";
 import type { TenantWithCountResponseDto } from "~/shared/api/model";
-import { LoadingState } from "~/shared/components/data-state";
-import { DataTable } from "~/shared/components/data-table";
-import { PageLayout } from "~/shared/components/page-layout";
-import { StatusBadge } from "~/shared/components/status-badge";
 import { formatDateTime } from "~/shared/lib/format";
+import { DataTable } from "~/shared/ui/data-display/data-table";
+import { StatusBadge } from "~/shared/ui/data-display/status-badge";
+import { LoadingState } from "~/shared/ui/feedback/data-state";
+import { PageLayout } from "~/shared/ui/layout/page-layout";
 
 export default function SystemTenantsRoute() {
   const queryClient = useQueryClient();
@@ -134,6 +134,7 @@ export default function SystemTenantsRoute() {
   return (
     <PageLayout
       title="テナント一覧"
+      description="契約中テナントの状態とユーザー数を横断で管理します。"
       actions={
         <Button
           component={Link}

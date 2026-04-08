@@ -23,11 +23,11 @@ import {
   UpdateRoleDtoRole,
   type UserSummaryResponseDto,
 } from "~/shared/api/model";
-import { LoadingState } from "~/shared/components/data-state";
-import { DataTable } from "~/shared/components/data-table";
-import { PageLayout } from "~/shared/components/page-layout";
-import { StatusBadge } from "~/shared/components/status-badge";
 import { formatDateTime } from "~/shared/lib/format";
+import { DataTable } from "~/shared/ui/data-display/data-table";
+import { StatusBadge } from "~/shared/ui/data-display/status-badge";
+import { LoadingState } from "~/shared/ui/feedback/data-state";
+import { PageLayout } from "~/shared/ui/layout/page-layout";
 
 export default function AdminUsersRoute() {
   const queryClient = useQueryClient();
@@ -136,6 +136,7 @@ export default function AdminUsersRoute() {
   return (
     <PageLayout
       title="ユーザー一覧"
+      description="所属ユーザーのロールと状態を管理します。"
       actions={
         <Button
           component={Link}

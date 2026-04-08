@@ -1,8 +1,4 @@
-import {
-  Pagination,
-  Table,
-  Text,
-} from "@mantine/core";
+import { Group, Pagination, Table, Text } from "@mantine/core";
 import {
   flexRender,
   getCoreRowModel,
@@ -38,12 +34,12 @@ export function DataTable<TData>({
   return (
     <>
       <Table.ScrollContainer minWidth={760}>
-        <Table>
+        <Table striped highlightOnHover verticalSpacing="sm">
           <Table.Thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <Table.Tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <Table.Th key={header.id}>
+                  <Table.Th key={header.id} fz={13} fw={600} c="dimmed">
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -68,10 +64,12 @@ export function DataTable<TData>({
           </Table.Tbody>
         </Table>
       </Table.ScrollContainer>
-      <Text size="sm" c="dimmed">
-        全 {total} 件
-      </Text>
-      <Pagination value={page} total={totalPages} onChange={onPageChange} />
+      <Group justify="space-between" mt="md">
+        <Text size="sm" c="dimmed">
+          全 {total} 件
+        </Text>
+        <Pagination value={page} total={totalPages} onChange={onPageChange} />
+      </Group>
     </>
   );
 }

@@ -1,5 +1,5 @@
-import { AuthenticatedAppShell } from "~/shared/components/app-shell";
-import { RequireAuth } from "~/shared/components/guard";
+import { RequireAuth } from "~/shared/session/ui/require-auth";
+import { AuthenticatedAppShell } from "~/widgets/app-shell/ui/authenticated-app-shell";
 
 export default function ProtectedLayout() {
   return (

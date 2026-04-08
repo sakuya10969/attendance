@@ -20,10 +20,10 @@ import {
   useAttendanceControllerGetToday,
 } from "~/shared/api/endpoints/attendance/attendance";
 import { AttendanceResponseDtoStatus } from "~/shared/api/model";
-import { LoadingState } from "~/shared/components/data-state";
-import { PageLayout } from "~/shared/components/page-layout";
-import { StatusBadge } from "~/shared/components/status-badge";
 import { formatDate, formatTime } from "~/shared/lib/format";
+import { StatusBadge } from "~/shared/ui/data-display/status-badge";
+import { LoadingState } from "~/shared/ui/feedback/data-state";
+import { PageLayout } from "~/shared/ui/layout/page-layout";
 
 function asIsoString(value: unknown) {
   return typeof value === "string" ? value : null;
@@ -116,7 +116,10 @@ export default function AppClockRoute() {
   }
 
   return (
-    <PageLayout title="打刻">
+    <PageLayout
+      title="打刻"
+      description="本日の勤務状態と打刻操作をひとつの画面にまとめています。"
+    >
       <SimpleGrid cols={{ base: 1, md: 3 }}>
         <Card className="kpi-card">
           <Text size="xs" tt="uppercase" fw={700} c="dimmed">
