@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
@@ -10,4 +5,216 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+}
+
+model Tenant {
+  id        String   @id @default(uuid())
+  name      String   @db.VarChar(255)
+  status    String   @default("active") @db.VarChar(20)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  users            User[]
+  employees        Employee[]
+  departments      Department[]
+  workPatterns     WorkPattern[]
+  attendances      Attendance[]
+  clockCorrections ClockCorrection[]
+  leaveRequests    LeaveRequest[]
+  closingRecords   ClosingRecord[]
+  auditLogs        AuditLog[]
+
+  @@map("tenants")
+}
+
+model User {
+  id          String   @id @default(uuid())
+  firebaseUid String   @unique @map("firebase_uid") @db.VarChar(128)
+  email       String   @db.VarChar(255)
+  name        String   @db.VarChar(255)
+  role        String   @db.VarChar(20)
+  tenantId    String?  @map("tenant_id")
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  tenant                   Tenant?           @relation(fields: [tenantId], references: [id])
+  employees                Employee[]
+  clockCorrectionsReviewed ClockCorrection[] @relation("ClockCorrectionReviewer")
+  leaveRequestsReviewed    LeaveRequest[]    @relation("LeaveRequestReviewer")
+  closingRecords           ClosingRecord[]
+  auditLogsAsActor         AuditLog[]
+
+  @@index([tenantId])
+  @@index([email])
+  @@map("users")
+}
+
+model Employee {
+  id             String   @id @default(uuid())
+  tenantId       String   @map("tenant_id")
+  userId         String?  @map("user_id")
+  employeeNumber String   @map("employee_number") @db.VarChar(50)
+  name           String   @db.VarChar(255)
+  departmentId   String?  @map("department_id")
+  workPatternId  String?  @map("work_pattern_id")
+  joinedAt       DateTime @map("joined_at") @db.Date
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  tenant           Tenant            @relation(fields: [tenantId], references: [id])
+  user             User?             @relation(fields: [userId], references: [id])
+  department       Department?       @relation(fields: [departmentId], references: [id])
+  workPattern      WorkPattern?      @relation(fields: [workPatternId], references: [id])
+  attendances      Attendance[]
+  clockCorrections ClockCorrection[]
+  leaveRequests    LeaveRequest[]
+
+  @@unique([tenantId, employeeNumber])
+  @@index([tenantId])
+  @@map("employees")
+}
+
+model Department {
+  id       String @id @default(uuid())
+  tenantId String @map("tenant_id")
+  name     String @db.VarChar(255)
+
+  tenant    Tenant     @relation(fields: [tenantId], references: [id])
+  employees Employee[]
+
+  @@index([tenantId])
+  @@map("departments")
+}
+
+model WorkPattern {
+  id           String @id @default(uuid())
+  tenantId     String @map("tenant_id")
+  name         String @db.VarChar(255)
+  startTime    String @map("start_time") @db.VarChar(8)
+  endTime      String @map("end_time") @db.VarChar(8)
+  breakMinutes Int    @default(60) @map("break_minutes")
+
+  tenant    Tenant     @relation(fields: [tenantId], references: [id])
+  employees Employee[]
+
+  @@index([tenantId])
+  @@map("work_patterns")
+}
+
+model Attendance {
+  id          String    @id @default(uuid())
+  tenantId    String    @map("tenant_id")
+  employeeId  String    @map("employee_id")
+  date        DateTime  @db.Date
+  clockIn     DateTime? @map("clock_in")
+  clockOut    DateTime? @map("clock_out")
+  status      String    @default("working") @db.VarChar(20)
+  isOvernight Boolean   @default(false) @map("is_overnight")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  tenant           Tenant            @relation(fields: [tenantId], references: [id])
+  employee         Employee          @relation(fields: [employeeId], references: [id])
+  breakRecords     BreakRecord[]
+  clockCorrections ClockCorrection[]
+
+  @@unique([tenantId, employeeId, date])
+  @@index([tenantId])
+  @@map("attendances")
+}
+
+model BreakRecord {
+  id           String    @id @default(uuid())
+  attendanceId String    @map("attendance_id")
+  startTime    DateTime  @map("start_time")
+  endTime      DateTime? @map("end_time")
+
+  attendance Attendance @relation(fields: [attendanceId], references: [id])
+
+  @@index([attendanceId])
+  @@map("break_records")
+}
+
+model ClockCorrection {
+  id                String    @id @default(uuid())
+  tenantId          String    @map("tenant_id")
+  attendanceId      String    @map("attendance_id")
+  requestedBy       String    @map("requested_by")
+  originalClockIn   DateTime? @map("original_clock_in")
+  originalClockOut  DateTime? @map("original_clock_out")
+  correctedClockIn  DateTime? @map("corrected_clock_in")
+  correctedClockOut DateTime? @map("corrected_clock_out")
+  reason            String
+  status            String    @default("pending") @db.VarChar(20)
+  reviewedBy        String?   @map("reviewed_by")
+  reviewedAt        DateTime? @map("reviewed_at")
+  createdAt         DateTime  @default(now()) @map("created_at")
+
+  tenant     Tenant     @relation(fields: [tenantId], references: [id])
+  attendance Attendance @relation(fields: [attendanceId], references: [id])
+  employee   Employee   @relation(fields: [requestedBy], references: [id])
+  reviewer   User?      @relation("ClockCorrectionReviewer", fields: [reviewedBy], references: [id])
+
+  @@index([tenantId])
+  @@index([attendanceId])
+  @@index([status])
+  @@map("clock_corrections")
+}
+
+model LeaveRequest {
+  id         String    @id @default(uuid())
+  tenantId   String    @map("tenant_id")
+  employeeId String    @map("employee_id")
+  leaveType  String    @map("leave_type") @db.VarChar(20)
+  startDate  DateTime  @map("start_date") @db.Date
+  endDate    DateTime  @map("end_date") @db.Date
+  reason     String?
+  status     String    @default("pending") @db.VarChar(20)
+  reviewedBy String?   @map("reviewed_by")
+  reviewedAt DateTime? @map("reviewed_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+
+  tenant   Tenant   @relation(fields: [tenantId], references: [id])
+  employee Employee @relation(fields: [employeeId], references: [id])
+  reviewer User?    @relation("LeaveRequestReviewer", fields: [reviewedBy], references: [id])
+
+  @@index([tenantId])
+  @@index([employeeId])
+  @@index([status])
+  @@map("leave_requests")
+}
+
+model ClosingRecord {
+  id        String   @id @default(uuid())
+  tenantId  String   @map("tenant_id")
+  yearMonth String   @map("year_month") @db.VarChar(7)
+  closedBy  String   @map("closed_by")
+  closedAt  DateTime @map("closed_at")
+  status    String   @default("closed") @db.VarChar(20)
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  closer User   @relation(fields: [closedBy], references: [id])
+
+  @@unique([tenantId, yearMonth])
+  @@map("closing_records")
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  tenantId   String?  @map("tenant_id")
+  actorId    String   @map("actor_id")
+  action     String   @db.VarChar(100)
+  targetType String   @map("target_type") @db.VarChar(50)
+  targetId   String?  @map("target_id")
+  detail     Json?
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  tenant Tenant? @relation(fields: [tenantId], references: [id])
+  actor  User    @relation(fields: [actorId], references: [id])
+
+  @@index([tenantId])
+  @@index([actorId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("audit_logs")
 }
