@@ -18,7 +18,6 @@ import type { Route } from "./+types/root";
 import { AuthProvider } from "./shared/session/model/auth-provider";
 import { queryClient } from "./shared/lib/query-client";
 import "./app.css";
-import '@mantine/core/styles.css';
 
 const theme = createTheme({
   primaryColor: "blue",

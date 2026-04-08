@@ -1,5 +1,4 @@
 import {
-  AppShell,
   Avatar,
   Badge,
   Box,
@@ -63,15 +62,11 @@ export function AuthenticatedAppShell() {
   const items = navItems[appUser.role];
 
   return (
-    <AppShell
-      header={{ height: 60 }}
-      navbar={{
-        width: 260,
-        breakpoint: "sm",
-        collapsed: { mobile: !opened },
-      }}
-    >
-      <AppShell.Header bg="white" style={{ borderBottom: "1px solid var(--mantine-color-gray-3)" }}>
+    <div className="app-shell">
+      <header
+        className="app-shell__header"
+        style={{ borderBottom: "1px solid var(--mantine-color-gray-3)" }}
+      >
         <Group h="100%" px="md" justify="space-between">
           <Group gap="md">
             <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
@@ -125,10 +120,17 @@ export function AuthenticatedAppShell() {
             </Menu>
           </Group>
         </Group>
-      </AppShell.Header>
+      </header>
 
-      <AppShell.Navbar bg="var(--mantine-color-gray-0)" style={{ borderRight: "1px solid var(--mantine-color-gray-3)" }}>
-        <AppShell.Section grow component={ScrollArea} px="sm" py="md">
+      <div className="app-shell__body">
+        <aside
+          className={`app-shell__sidebar${opened ? " app-shell__sidebar--opened" : ""}`}
+          style={{
+            background: "var(--mantine-color-gray-0)",
+            borderRight: "1px solid var(--mantine-color-gray-3)",
+          }}
+        >
+          <ScrollArea className="app-shell__sidebar-scroll" px="sm" py="md">
           <Text size="xs" fw={700} c="dimmed" tt="uppercase" px="sm" mb="xs" style={{ letterSpacing: "0.1em" }}>
             メニュー
           </Text>
@@ -145,12 +147,14 @@ export function AuthenticatedAppShell() {
               />
             ))}
           </Stack>
-        </AppShell.Section>
-      </AppShell.Navbar>
+          </ScrollArea>
+        </aside>
 
-      <AppShell.Main bg="white" p="lg">
-        <Outlet />
-      </AppShell.Main>
-    </AppShell>
+        <main className="app-shell__main">
+          <Outlet />
+        </main>
+      </div>
+      {opened ? <button className="app-shell__overlay" onClick={toggle} aria-label="Close navigation" /> : null}
+    </div>
   );
 }

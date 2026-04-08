@@ -65,6 +65,7 @@ export default function AdminUsersRoute() {
   const columns = useMemo<ColumnDef<UserSummaryResponseDto>[]>(
     () => [
       {
+        id: "user",
         header: "ユーザー",
         cell: ({ row }) => (
           <Stack gap={2}>
@@ -76,18 +77,22 @@ export default function AdminUsersRoute() {
         ),
       },
       {
+        id: "role",
         header: "ロール",
         cell: ({ row }) => <StatusBadge value={row.original.role} />,
       },
       {
+        id: "status",
         header: "状態",
         cell: ({ row }) => <StatusBadge value={row.original.isActive} />,
       },
       {
+        id: "createdAt",
         header: "作成日時",
         cell: ({ row }) => formatDateTime(row.original.createdAt),
       },
       {
+        id: "actions",
         header: "",
         cell: ({ row }) => (
           <Menu shadow="md" width={180}>

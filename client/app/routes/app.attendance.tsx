@@ -55,22 +55,27 @@ export default function AppAttendanceRoute() {
   const columns = useMemo<ColumnDef<AttendanceListItemResponseDto>[]>(
     () => [
       {
+        id: "date",
         header: "日付",
         cell: ({ row }) => formatDate(row.original.date),
       },
       {
+        id: "clockIn",
         header: "出勤",
         cell: ({ row }) => <span className="mono">{formatTime(row.original.clockIn)}</span>,
       },
       {
+        id: "clockOut",
         header: "退勤",
         cell: ({ row }) => <span className="mono">{formatTime(row.original.clockOut)}</span>,
       },
       {
+        id: "breakMinutes",
         header: "休憩",
         cell: ({ row }) => `${breakMinutes(row.original.breakRecords)}分`,
       },
       {
+        id: "status",
         header: "状態",
         cell: ({ row }) => <StatusBadge value={row.original.status} />,
       },
