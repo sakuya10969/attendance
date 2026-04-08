@@ -4,9 +4,9 @@ import {
   ForbiddenException,
   Injectable,
   UnauthorizedException,
-} from '@nestjs/common'
-import { FirebaseService } from '../../firebase/firebase.service'
-import { PrismaService } from '../../prisma/prisma.service'
+} from '@nestjs/common';
+import { FirebaseService } from '../../firebase/firebase.service';
+import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -16,45 +16,47 @@ export class AuthGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest()
-    const authHeader: string | undefined = request.headers['authorization']
+    const request = context.switchToHttp().getRequest();
+    const authHeader: string | undefined = request.headers['authorization'];
 
     if (!authHeader?.startsWith('Bearer ')) {
-      throw new UnauthorizedException('Authorization header is missing or invalid')
+      throw new UnauthorizedException(
+        'Authorization header is missing or invalid',
+      );
     }
 
-    const token = authHeader.slice(7)
+    const token = authHeader.slice(7);
 
-    let decoded: { uid: string }
+    let decoded: { uid: string };
     try {
-      decoded = await this.firebase.verifyIdToken(token)
+      decoded = await this.firebase.verifyIdToken(token);
     } catch {
-      throw new UnauthorizedException('Invalid or expired token')
+      throw new UnauthorizedException('Invalid or expired token');
     }
 
     const user = await this.prisma.user.findUnique({
       where: { firebaseUid: decoded.uid },
       include: { tenant: true },
-    })
+    });
 
     if (!user) {
-      throw new UnauthorizedException('User not found')
+      throw new UnauthorizedException('User not found');
     }
 
     if (!user.isActive) {
-      throw new ForbiddenException('User is inactive')
+      throw new ForbiddenException('User is inactive');
     }
 
     if (user.tenant && user.tenant.status === 'suspended') {
-      throw new ForbiddenException('Tenant is suspended')
+      throw new ForbiddenException('Tenant is suspended');
     }
 
     request.user = {
       userId: user.id,
       tenantId: user.tenantId ?? null,
       role: user.role,
-    }
+    };
 
-    return true
+    return true;
   }
 }
