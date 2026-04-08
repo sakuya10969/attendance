@@ -1,0 +1,1599 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/v1/system/audit-logs": {
+      "get": {
+        "operationId": "AuditLogsController_findAllSystem",
+        "parameters": [
+          {
+            "name": "action",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "actor_id",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "全体監査ログ一覧（system_admin）",
+        "tags": [
+          "audit-logs"
+        ]
+      }
+    },
+    "/api/v1/admin/audit-logs": {
+      "get": {
+        "operationId": "AuditLogsController_findAllTenant",
+        "parameters": [
+          {
+            "name": "action",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "actor_id",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "テナント内監査ログ一覧（tenant_admin）",
+        "tags": [
+          "audit-logs"
+        ]
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "operationId": "AuthController_me",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "現在のユーザー情報取得",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/tenants": {
+      "post": {
+        "operationId": "TenantsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTenantDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "テナント作成（初期管理者設定含む）",
+        "tags": [
+          "tenants"
+        ]
+      },
+      "get": {
+        "operationId": "TenantsController_findAll",
+        "parameters": [
+          {
+            "name": "status",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "テナント一覧",
+        "tags": [
+          "tenants"
+        ]
+      }
+    },
+    "/api/v1/tenants/{id}": {
+      "get": {
+        "operationId": "TenantsController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "テナント詳細",
+        "tags": [
+          "tenants"
+        ]
+      },
+      "patch": {
+        "operationId": "TenantsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTenantDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "テナント更新",
+        "tags": [
+          "tenants"
+        ]
+      }
+    },
+    "/api/v1/tenants/{id}/suspend": {
+      "post": {
+        "operationId": "TenantsController_suspend",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "テナント停止",
+        "tags": [
+          "tenants"
+        ]
+      }
+    },
+    "/api/v1/tenants/{id}/resume": {
+      "post": {
+        "operationId": "TenantsController_resume",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "テナント再開",
+        "tags": [
+          "tenants"
+        ]
+      }
+    },
+    "/api/v1/users": {
+      "post": {
+        "operationId": "UsersController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "ユーザー作成",
+        "tags": [
+          "users"
+        ]
+      },
+      "get": {
+        "operationId": "UsersController_findAll",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "テナント内ユーザー一覧",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/api/v1/users/{id}": {
+      "get": {
+        "operationId": "UsersController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "ユーザー詳細",
+        "tags": [
+          "users"
+        ]
+      },
+      "patch": {
+        "operationId": "UsersController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "ユーザー更新（氏名変更）",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/api/v1/users/{id}/role": {
+      "patch": {
+        "operationId": "UsersController_updateRole",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRoleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "ロール変更",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/api/v1/users/{id}/deactivate": {
+      "patch": {
+        "operationId": "UsersController_deactivate",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "ユーザー無効化",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/api/v1/employees": {
+      "post": {
+        "operationId": "EmployeesController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEmployeeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "従業員作成",
+        "tags": [
+          "employees"
+        ]
+      },
+      "get": {
+        "operationId": "EmployeesController_findAll",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "従業員一覧",
+        "tags": [
+          "employees"
+        ]
+      }
+    },
+    "/api/v1/employees/{id}": {
+      "get": {
+        "operationId": "EmployeesController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "従業員詳細",
+        "tags": [
+          "employees"
+        ]
+      },
+      "patch": {
+        "operationId": "EmployeesController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateEmployeeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "従業員更新",
+        "tags": [
+          "employees"
+        ]
+      }
+    },
+    "/api/v1/attendance/clock-in": {
+      "post": {
+        "operationId": "AttendanceController_clockIn",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "出勤打刻",
+        "tags": [
+          "attendance"
+        ]
+      }
+    },
+    "/api/v1/attendance/clock-out": {
+      "post": {
+        "operationId": "AttendanceController_clockOut",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "退勤打刻",
+        "tags": [
+          "attendance"
+        ]
+      }
+    },
+    "/api/v1/attendance/break/start": {
+      "post": {
+        "operationId": "AttendanceController_breakStart",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "休憩開始",
+        "tags": [
+          "attendance"
+        ]
+      }
+    },
+    "/api/v1/attendance/break/end": {
+      "post": {
+        "operationId": "AttendanceController_breakEnd",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "休憩終了",
+        "tags": [
+          "attendance"
+        ]
+      }
+    },
+    "/api/v1/attendance/today": {
+      "get": {
+        "operationId": "AttendanceController_getToday",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "本日の勤怠状態取得",
+        "tags": [
+          "attendance"
+        ]
+      }
+    },
+    "/api/v1/attendance": {
+      "get": {
+        "operationId": "AttendanceController_findMine",
+        "parameters": [
+          {
+            "name": "year",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "month",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "自身の勤怠一覧（月指定）",
+        "tags": [
+          "attendance"
+        ]
+      }
+    },
+    "/api/v1/attendance/summary": {
+      "get": {
+        "operationId": "AttendanceController_getMySummary",
+        "parameters": [
+          {
+            "name": "year",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "month",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "自身の月次集計",
+        "tags": [
+          "attendance"
+        ]
+      }
+    },
+    "/api/v1/admin/attendance": {
+      "get": {
+        "operationId": "AttendanceController_findAllAdmin",
+        "parameters": [
+          {
+            "name": "employee_id",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "year",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "month",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "テナント内全従業員の勤怠一覧（tenant_admin）",
+        "tags": [
+          "attendance"
+        ]
+      }
+    },
+    "/api/v1/admin/attendance/summary": {
+      "get": {
+        "operationId": "AttendanceController_getAdminSummary",
+        "parameters": [
+          {
+            "name": "employee_id",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "year",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "month",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "テナント内月次集計（tenant_admin）",
+        "tags": [
+          "attendance"
+        ]
+      }
+    },
+    "/api/v1/clock-corrections": {
+      "post": {
+        "operationId": "ClockCorrectionsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateClockCorrectionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "打刻修正申請作成",
+        "tags": [
+          "clock-corrections"
+        ]
+      },
+      "get": {
+        "operationId": "ClockCorrectionsController_findMine",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "自身の修正申請一覧",
+        "tags": [
+          "clock-corrections"
+        ]
+      }
+    },
+    "/api/v1/admin/clock-corrections": {
+      "get": {
+        "operationId": "ClockCorrectionsController_findAllAdmin",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "テナント内申請一覧（tenant_admin）",
+        "tags": [
+          "clock-corrections"
+        ]
+      }
+    },
+    "/api/v1/admin/clock-corrections/{id}/approve": {
+      "post": {
+        "operationId": "ClockCorrectionsController_approve",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "承認",
+        "tags": [
+          "clock-corrections"
+        ]
+      }
+    },
+    "/api/v1/admin/clock-corrections/{id}/reject": {
+      "post": {
+        "operationId": "ClockCorrectionsController_reject",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "差し戻し",
+        "tags": [
+          "clock-corrections"
+        ]
+      }
+    },
+    "/api/v1/leave-requests": {
+      "post": {
+        "operationId": "LeaveRequestsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateLeaveRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "休暇申請作成",
+        "tags": [
+          "leave-requests"
+        ]
+      },
+      "get": {
+        "operationId": "LeaveRequestsController_findMine",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "自身の休暇申請一覧",
+        "tags": [
+          "leave-requests"
+        ]
+      }
+    },
+    "/api/v1/admin/leave-requests": {
+      "get": {
+        "operationId": "LeaveRequestsController_findAllAdmin",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "テナント内申請一覧（tenant_admin）",
+        "tags": [
+          "leave-requests"
+        ]
+      }
+    },
+    "/api/v1/admin/leave-requests/{id}/approve": {
+      "post": {
+        "operationId": "LeaveRequestsController_approve",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "承認",
+        "tags": [
+          "leave-requests"
+        ]
+      }
+    },
+    "/api/v1/admin/leave-requests/{id}/reject": {
+      "post": {
+        "operationId": "LeaveRequestsController_reject",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "差し戻し",
+        "tags": [
+          "leave-requests"
+        ]
+      }
+    },
+    "/api/v1/admin/closing": {
+      "post": {
+        "operationId": "ClosingController_close",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateClosingDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "締め実行",
+        "tags": [
+          "closing"
+        ]
+      },
+      "get": {
+        "operationId": "ClosingController_findAll",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "締め履歴一覧",
+        "tags": [
+          "closing"
+        ]
+      }
+    },
+    "/api/v1/admin/closing/{id}/reopen": {
+      "post": {
+        "operationId": "ClosingController_reopen",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "締め再開",
+        "tags": [
+          "closing"
+        ]
+      }
+    },
+    "/api/v1/admin/departments": {
+      "post": {
+        "operationId": "SettingsController_createDepartment",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDepartmentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "部署作成",
+        "tags": [
+          "settings"
+        ]
+      },
+      "get": {
+        "operationId": "SettingsController_findDepartments",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "部署一覧",
+        "tags": [
+          "settings"
+        ]
+      }
+    },
+    "/api/v1/admin/departments/{id}": {
+      "patch": {
+        "operationId": "SettingsController_updateDepartment",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDepartmentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "部署更新",
+        "tags": [
+          "settings"
+        ]
+      }
+    },
+    "/api/v1/admin/work-patterns": {
+      "post": {
+        "operationId": "SettingsController_createWorkPattern",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateWorkPatternDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "勤務形態作成",
+        "tags": [
+          "settings"
+        ]
+      },
+      "get": {
+        "operationId": "SettingsController_findWorkPatterns",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "勤務形態一覧",
+        "tags": [
+          "settings"
+        ]
+      }
+    },
+    "/api/v1/admin/work-patterns/{id}": {
+      "patch": {
+        "operationId": "SettingsController_updateWorkPattern",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateWorkPatternDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "勤務形態更新",
+        "tags": [
+          "settings"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "勤怠管理システム API",
+    "description": "マルチテナント勤怠管理システムのREST API",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "CreateTenantDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "株式会社サンプル"
+          },
+          "adminEmail": {
+            "type": "string",
+            "example": "admin@example.com"
+          },
+          "adminName": {
+            "type": "string",
+            "example": "田中太郎"
+          }
+        },
+        "required": [
+          "name",
+          "adminEmail",
+          "adminName"
+        ]
+      },
+      "UpdateTenantDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "株式会社サンプル更新"
+          }
+        }
+      },
+      "CreateUserDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "user@example.com"
+          },
+          "name": {
+            "type": "string",
+            "example": "山田花子"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "tenant_admin",
+              "tenant_user"
+            ],
+            "default": "tenant_user"
+          }
+        },
+        "required": [
+          "email",
+          "name"
+        ]
+      },
+      "UpdateUserDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "山田花子（改）"
+          }
+        }
+      },
+      "UpdateRoleDto": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": [
+              "tenant_admin",
+              "tenant_user"
+            ]
+          }
+        },
+        "required": [
+          "role"
+        ]
+      },
+      "CreateEmployeeDto": {
+        "type": "object",
+        "properties": {
+          "employeeNumber": {
+            "type": "string",
+            "example": "EMP001"
+          },
+          "name": {
+            "type": "string",
+            "example": "山田太郎"
+          },
+          "joinedAt": {
+            "type": "string",
+            "example": "2024-04-01"
+          },
+          "userId": {
+            "type": "string",
+            "description": "紐付けるユーザーID"
+          },
+          "departmentId": {
+            "type": "string",
+            "description": "部署ID"
+          },
+          "workPatternId": {
+            "type": "string",
+            "description": "勤務形態ID"
+          }
+        },
+        "required": [
+          "employeeNumber",
+          "name",
+          "joinedAt"
+        ]
+      },
+      "UpdateEmployeeDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "departmentId": {
+            "type": "string"
+          },
+          "workPatternId": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateClockCorrectionDto": {
+        "type": "object",
+        "properties": {
+          "attendanceId": {
+            "type": "string",
+            "description": "対象勤怠レコードID"
+          },
+          "correctedClockIn": {
+            "type": "string",
+            "description": "修正後出勤時刻（ISO8601）"
+          },
+          "correctedClockOut": {
+            "type": "string",
+            "description": "修正後退勤時刻（ISO8601）"
+          },
+          "reason": {
+            "type": "string",
+            "description": "修正理由"
+          }
+        },
+        "required": [
+          "attendanceId",
+          "reason"
+        ]
+      },
+      "CreateLeaveRequestDto": {
+        "type": "object",
+        "properties": {
+          "leaveType": {
+            "type": "string",
+            "enum": [
+              "paid",
+              "unpaid",
+              "sick",
+              "other"
+            ]
+          },
+          "startDate": {
+            "type": "string",
+            "example": "2026-05-01"
+          },
+          "endDate": {
+            "type": "string",
+            "example": "2026-05-03"
+          },
+          "reason": {
+            "type": "string",
+            "example": "私用のため"
+          }
+        },
+        "required": [
+          "leaveType",
+          "startDate",
+          "endDate"
+        ]
+      },
+      "CreateClosingDto": {
+        "type": "object",
+        "properties": {
+          "yearMonth": {
+            "type": "string",
+            "example": "2026-04",
+            "description": "対象年月（YYYY-MM）"
+          }
+        },
+        "required": [
+          "yearMonth"
+        ]
+      },
+      "CreateDepartmentDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "開発部"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "CreateWorkPatternDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "通常勤務"
+          },
+          "startTime": {
+            "type": "string",
+            "example": "09:00:00",
+            "description": "所定開始時刻（HH:MM:SS）"
+          },
+          "endTime": {
+            "type": "string",
+            "example": "18:00:00",
+            "description": "所定終了時刻（HH:MM:SS）"
+          },
+          "breakMinutes": {
+            "type": "number",
+            "example": 60,
+            "description": "所定休憩時間（分）"
+          }
+        },
+        "required": [
+          "name",
+          "startTime",
+          "endTime"
+        ]
+      }
+    }
+  }
+}
