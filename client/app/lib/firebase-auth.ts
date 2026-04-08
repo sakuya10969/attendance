@@ -1,18 +1,7 @@
-import {
-  GoogleAuthProvider,
-  signInWithPopup,
-  signOut,
-} from 'firebase/auth'
-import { auth } from "./firebase"
+import { signOut } from "firebase/auth";
 
-const googleProvider = new GoogleAuthProvider()
-
-export async function loginWithGoogle() {
-  const result = await signInWithPopup(auth, googleProvider)
-  const idToken = await result.user.getIdToken()
-  return { user: result.user, idToken }
-}
+import { auth } from "./firebase";
 
 export async function logout() {
-  await signOut(auth)
+  await signOut(auth);
 }
