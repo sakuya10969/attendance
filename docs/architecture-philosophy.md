@@ -57,7 +57,7 @@ shared → entities → features → widgets → routes
 ### モジュール設計
 
 ```
-server/src/modules/
+server/src/
 ├── auth/           # 認証（Firebase token検証）
 ├── users/          # ユーザーCRUD、ロール管理
 ├── tenants/        # テナントCRUD、初期管理者設定

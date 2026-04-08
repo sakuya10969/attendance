@@ -60,16 +60,15 @@ server/
 │   │   ├── interceptors/     # ロギング、レスポンス変換
 │   │   ├── filters/          # 例外フィルタ
 │   │   └── pipes/            # バリデーションパイプ
-│   ├── modules/
-│   │   ├── auth/             # Firebase token検証、認証ミドルウェア
-│   │   ├── users/            # ユーザーCRUD、ロール管理
-│   │   ├── tenants/          # テナントCRUD（作成・停止・再開）、初期管理者設定
-│   │   ├── employees/        # 従業員管理
-│   │   ├── attendance/       # 勤怠（打刻・集計）
-│   │   ├── leave-requests/   # 休暇申請
-│   │   ├── approvals/        # 承認フロー
-│   │   ├── closing/          # 締め処理
-│   │   └── audit-logs/       # 監査ログ（記録・閲覧）
+│   ├── auth/             # Firebase token検証、認証ミドルウェア
+│   ├── users/            # ユーザーCRUD、ロール管理
+│   ├── tenants/          # テナントCRUD（作成・停止・再開）、初期管理者設定
+│   ├── employees/        # 従業員管理
+│   ├── attendance/       # 勤怠（打刻・集計）
+│   ├── leave-requests/   # 休暇申請
+│   ├── approvals/        # 承認フロー
+│   ├── closing/          # 締め処理
+│   └── audit-logs/       # 監査ログ（記録・閲覧）
 │   ├── prisma/               # PrismaService、マイグレーション
 │   ├── app.module.ts
 │   └── main.ts
