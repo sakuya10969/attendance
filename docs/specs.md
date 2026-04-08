@@ -3,7 +3,7 @@
 ## 1. 認証・認可
 
 ### 1.1 認証フロー
-- フロントエンドで Firebase SDK を使いメール/パスワードでログイン
+- フロントエンドで Firebase SDK を使い Google ログインまたはメール/パスワードでログイン
 - ログイン成功後、Firebase IDトークンを取得
 - axios 共通インスタンスの Authorization ヘッダに `Bearer <token>` を自動付与
 - バックエンドの AuthGuard で firebase-admin により IDトークンを検証
