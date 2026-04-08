@@ -16,11 +16,11 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import { GetCurrentUser } from '../share/decorators/current-user.decorator';
+import { CurrentTenantId } from '../share/decorators/current-tenant-id.decorator';
 import { Roles } from '../share/decorators/roles.decorator';
 import { AuthGuard } from '../share/guards/auth.guard';
 import { RolesGuard } from '../share/guards/roles.guard';
-import type { CurrentUser } from '../share/types/current-user.type';
+import { TenantGuard } from '../share/guards/tenant.guard';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import {
   EmployeeListResponseDto,
@@ -31,7 +31,7 @@ import { EmployeesService } from './employees.service';
 
 @ApiTags('employees')
 @ApiBearerAuth()
-@UseGuards(AuthGuard, RolesGuard)
+@UseGuards(AuthGuard, RolesGuard, TenantGuard)
 @Roles('tenant_admin')
 @Controller('api/v1/employees')
 export class EmployeesController {
@@ -40,11 +40,8 @@ export class EmployeesController {
   @Post()
   @ApiOperation({ summary: '従業員作成' })
   @ApiCreatedResponse({ type: EmployeeResponseDto })
-  create(
-    @Body() dto: CreateEmployeeDto,
-    @GetCurrentUser() currentUser: CurrentUser,
-  ) {
-    return this.employeesService.create(dto, currentUser.tenantId!);
+  create(@Body() dto: CreateEmployeeDto, @CurrentTenantId() tenantId: string) {
+    return this.employeesService.create(dto, tenantId);
   }
 
   @Get()
@@ -53,21 +50,18 @@ export class EmployeesController {
   @ApiQuery({ name: 'limit', required: false, type: Number })
   @ApiOkResponse({ type: EmployeeListResponseDto })
   findAll(
-    @GetCurrentUser() currentUser: CurrentUser,
+    @CurrentTenantId() tenantId: string,
     @Query('page') page?: number,
     @Query('limit') limit?: number,
   ) {
-    return this.employeesService.findAll(currentUser.tenantId!, {
-      page,
-      limit,
-    });
+    return this.employeesService.findAll(tenantId, { page, limit });
   }
 
   @Get(':id')
   @ApiOperation({ summary: '従業員詳細' })
   @ApiOkResponse({ type: EmployeeResponseDto })
-  findOne(@Param('id') id: string, @GetCurrentUser() currentUser: CurrentUser) {
-    return this.employeesService.findOne(id, currentUser.tenantId!);
+  findOne(@Param('id') id: string, @CurrentTenantId() tenantId: string) {
+    return this.employeesService.findOne(id, tenantId);
   }
 
   @Patch(':id')
@@ -76,8 +70,8 @@ export class EmployeesController {
   update(
     @Param('id') id: string,
     @Body() dto: UpdateEmployeeDto,
-    @GetCurrentUser() currentUser: CurrentUser,
+    @CurrentTenantId() tenantId: string,
   ) {
-    return this.employeesService.update(id, dto, currentUser.tenantId!);
+    return this.employeesService.update(id, dto, tenantId);
   }
 }

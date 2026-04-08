@@ -6,11 +6,11 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import { GetCurrentUser } from '../share/decorators/current-user.decorator';
+import { CurrentTenantId } from '../share/decorators/current-tenant-id.decorator';
 import { Roles } from '../share/decorators/roles.decorator';
 import { AuthGuard } from '../share/guards/auth.guard';
 import { RolesGuard } from '../share/guards/roles.guard';
-import type { CurrentUser } from '../share/types/current-user.type';
+import { TenantGuard } from '../share/guards/tenant.guard';
 import { AuditLogListResponseDto } from './dto/audit-log-response.dto';
 import { AuditLogsService } from './audit-logs.service';
 
@@ -51,6 +51,7 @@ export class AuditLogsController {
 
   @Get('admin/audit-logs')
   @Roles('tenant_admin')
+  @UseGuards(TenantGuard)
   @ApiOperation({ summary: 'テナント内監査ログ一覧（tenant_admin）' })
   @ApiQuery({ name: 'action', required: false, type: String })
   @ApiQuery({ name: 'actor_id', required: false, type: String })
@@ -60,7 +61,7 @@ export class AuditLogsController {
   @ApiQuery({ name: 'limit', required: false, type: Number })
   @ApiOkResponse({ type: AuditLogListResponseDto })
   findAllTenant(
-    @GetCurrentUser() currentUser: CurrentUser,
+    @CurrentTenantId() tenantId: string,
     @Query('action') action?: string,
     @Query('actor_id') actorId?: string,
     @Query('from') from?: string,
@@ -69,7 +70,7 @@ export class AuditLogsController {
     @Query('limit') limit?: number,
   ) {
     return this.auditLogsService.findAll({
-      tenantId: currentUser.tenantId!,
+      tenantId,
       action,
       actorId,
       from,

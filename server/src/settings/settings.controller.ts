@@ -14,11 +14,11 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { GetCurrentUser } from '../share/decorators/current-user.decorator';
+import { CurrentTenantId } from '../share/decorators/current-tenant-id.decorator';
 import { Roles } from '../share/decorators/roles.decorator';
 import { AuthGuard } from '../share/guards/auth.guard';
 import { RolesGuard } from '../share/guards/roles.guard';
-import type { CurrentUser } from '../share/types/current-user.type';
+import { TenantGuard } from '../share/guards/tenant.guard';
 import { CreateDepartmentDto } from './dto/create-department.dto';
 import { CreateWorkPatternDto } from './dto/create-work-pattern.dto';
 import {
@@ -29,7 +29,7 @@ import { SettingsService } from './settings.service';
 
 @ApiTags('settings')
 @ApiBearerAuth()
-@UseGuards(AuthGuard, RolesGuard)
+@UseGuards(AuthGuard, RolesGuard, TenantGuard)
 @Roles('tenant_admin')
 @Controller('api/v1/admin')
 export class SettingsController {
@@ -42,16 +42,16 @@ export class SettingsController {
   @ApiCreatedResponse({ type: DepartmentResponseDto })
   createDepartment(
     @Body() dto: CreateDepartmentDto,
-    @GetCurrentUser() currentUser: CurrentUser,
+    @CurrentTenantId() tenantId: string,
   ) {
-    return this.settingsService.createDepartment(dto, currentUser.tenantId!);
+    return this.settingsService.createDepartment(dto, tenantId);
   }
 
   @Get('departments')
   @ApiOperation({ summary: '部署一覧' })
   @ApiOkResponse({ type: [DepartmentResponseDto] })
-  findDepartments(@GetCurrentUser() currentUser: CurrentUser) {
-    return this.settingsService.findDepartments(currentUser.tenantId!);
+  findDepartments(@CurrentTenantId() tenantId: string) {
+    return this.settingsService.findDepartments(tenantId);
   }
 
   @Patch('departments/:id')
@@ -60,13 +60,9 @@ export class SettingsController {
   updateDepartment(
     @Param('id') id: string,
     @Body() dto: CreateDepartmentDto,
-    @GetCurrentUser() currentUser: CurrentUser,
+    @CurrentTenantId() tenantId: string,
   ) {
-    return this.settingsService.updateDepartment(
-      id,
-      dto,
-      currentUser.tenantId!,
-    );
+    return this.settingsService.updateDepartment(id, dto, tenantId);
   }
 
   // --- 勤務形態 ---
@@ -76,16 +72,16 @@ export class SettingsController {
   @ApiCreatedResponse({ type: WorkPatternResponseDto })
   createWorkPattern(
     @Body() dto: CreateWorkPatternDto,
-    @GetCurrentUser() currentUser: CurrentUser,
+    @CurrentTenantId() tenantId: string,
   ) {
-    return this.settingsService.createWorkPattern(dto, currentUser.tenantId!);
+    return this.settingsService.createWorkPattern(dto, tenantId);
   }
 
   @Get('work-patterns')
   @ApiOperation({ summary: '勤務形態一覧' })
   @ApiOkResponse({ type: [WorkPatternResponseDto] })
-  findWorkPatterns(@GetCurrentUser() currentUser: CurrentUser) {
-    return this.settingsService.findWorkPatterns(currentUser.tenantId!);
+  findWorkPatterns(@CurrentTenantId() tenantId: string) {
+    return this.settingsService.findWorkPatterns(tenantId);
   }
 
   @Patch('work-patterns/:id')
@@ -94,12 +90,8 @@ export class SettingsController {
   updateWorkPattern(
     @Param('id') id: string,
     @Body() dto: CreateWorkPatternDto,
-    @GetCurrentUser() currentUser: CurrentUser,
+    @CurrentTenantId() tenantId: string,
   ) {
-    return this.settingsService.updateWorkPattern(
-      id,
-      dto,
-      currentUser.tenantId!,
-    );
+    return this.settingsService.updateWorkPattern(id, dto, tenantId);
   }
 }

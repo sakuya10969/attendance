@@ -17,9 +17,11 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { GetCurrentUser } from '../share/decorators/current-user.decorator';
+import { CurrentTenantId } from '../share/decorators/current-tenant-id.decorator';
 import { Roles } from '../share/decorators/roles.decorator';
 import { AuthGuard } from '../share/guards/auth.guard';
 import { RolesGuard } from '../share/guards/roles.guard';
+import { TenantGuard } from '../share/guards/tenant.guard';
 import type { CurrentUser } from '../share/types/current-user.type';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
@@ -33,7 +35,7 @@ import { UsersService } from './users.service';
 
 @ApiTags('users')
 @ApiBearerAuth()
-@UseGuards(AuthGuard, RolesGuard)
+@UseGuards(AuthGuard, RolesGuard, TenantGuard)
 @Roles('tenant_admin')
 @Controller('api/v1/users')
 export class UsersController {
@@ -44,13 +46,10 @@ export class UsersController {
   @ApiCreatedResponse({ type: UserResponseDto })
   create(
     @Body() dto: CreateUserDto,
+    @CurrentTenantId() tenantId: string,
     @GetCurrentUser() currentUser: CurrentUser,
   ) {
-    return this.usersService.create(
-      dto,
-      currentUser.tenantId!,
-      currentUser.userId,
-    );
+    return this.usersService.create(dto, tenantId, currentUser.userId);
   }
 
   @Get()
@@ -59,18 +58,18 @@ export class UsersController {
   @ApiQuery({ name: 'limit', required: false, type: Number })
   @ApiOkResponse({ type: UserListResponseDto })
   findAll(
-    @GetCurrentUser() currentUser: CurrentUser,
+    @CurrentTenantId() tenantId: string,
     @Query('page') page?: number,
     @Query('limit') limit?: number,
   ) {
-    return this.usersService.findAll(currentUser.tenantId!, { page, limit });
+    return this.usersService.findAll(tenantId, { page, limit });
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'ユーザー詳細' })
   @ApiOkResponse({ type: UserSummaryResponseDto })
-  findOne(@Param('id') id: string, @GetCurrentUser() currentUser: CurrentUser) {
-    return this.usersService.findOne(id, currentUser.tenantId!);
+  findOne(@Param('id') id: string, @CurrentTenantId() tenantId: string) {
+    return this.usersService.findOne(id, tenantId);
   }
 
   @Patch(':id')
@@ -79,9 +78,9 @@ export class UsersController {
   update(
     @Param('id') id: string,
     @Body() dto: UpdateUserDto,
-    @GetCurrentUser() currentUser: CurrentUser,
+    @CurrentTenantId() tenantId: string,
   ) {
-    return this.usersService.update(id, dto, currentUser.tenantId!);
+    return this.usersService.update(id, dto, tenantId);
   }
 
   @Patch(':id/role')
@@ -90,14 +89,10 @@ export class UsersController {
   updateRole(
     @Param('id') id: string,
     @Body() dto: UpdateRoleDto,
+    @CurrentTenantId() tenantId: string,
     @GetCurrentUser() currentUser: CurrentUser,
   ) {
-    return this.usersService.updateRole(
-      id,
-      dto,
-      currentUser.tenantId!,
-      currentUser.userId,
-    );
+    return this.usersService.updateRole(id, dto, tenantId, currentUser.userId);
   }
 
   @Patch(':id/deactivate')
@@ -105,12 +100,9 @@ export class UsersController {
   @ApiOkResponse({ type: UserResponseDto })
   deactivate(
     @Param('id') id: string,
+    @CurrentTenantId() tenantId: string,
     @GetCurrentUser() currentUser: CurrentUser,
   ) {
-    return this.usersService.deactivate(
-      id,
-      currentUser.tenantId!,
-      currentUser.userId,
-    );
+    return this.usersService.deactivate(id, tenantId, currentUser.userId);
   }
 }

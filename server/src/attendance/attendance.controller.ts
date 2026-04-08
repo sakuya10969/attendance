@@ -8,9 +8,11 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { GetCurrentUser } from '../share/decorators/current-user.decorator';
+import { CurrentTenantId } from '../share/decorators/current-tenant-id.decorator';
 import { Roles } from '../share/decorators/roles.decorator';
 import { AuthGuard } from '../share/guards/auth.guard';
 import { RolesGuard } from '../share/guards/roles.guard';
+import { TenantGuard } from '../share/guards/tenant.guard';
 import type { CurrentUser } from '../share/types/current-user.type';
 import { AttendanceService } from './attendance.service';
 import {
@@ -22,7 +24,7 @@ import {
 
 @ApiTags('attendance')
 @ApiBearerAuth()
-@UseGuards(AuthGuard, RolesGuard)
+@UseGuards(AuthGuard, RolesGuard, TenantGuard)
 @Controller('api/v1')
 export class AttendanceController {
   constructor(private readonly attendanceService: AttendanceService) {}
@@ -33,55 +35,55 @@ export class AttendanceController {
   @Roles('tenant_user', 'tenant_admin')
   @ApiOperation({ summary: '出勤打刻' })
   @ApiCreatedResponse({ type: AttendanceResponseDto })
-  clockIn(@GetCurrentUser() currentUser: CurrentUser) {
-    return this.attendanceService.clockIn(
-      currentUser.userId,
-      currentUser.tenantId!,
-    );
+  clockIn(
+    @GetCurrentUser() currentUser: CurrentUser,
+    @CurrentTenantId() tenantId: string,
+  ) {
+    return this.attendanceService.clockIn(currentUser.userId, tenantId);
   }
 
   @Post('attendance/clock-out')
   @Roles('tenant_user', 'tenant_admin')
   @ApiOperation({ summary: '退勤打刻' })
   @ApiOkResponse({ type: AttendanceResponseDto })
-  clockOut(@GetCurrentUser() currentUser: CurrentUser) {
-    return this.attendanceService.clockOut(
-      currentUser.userId,
-      currentUser.tenantId!,
-    );
+  clockOut(
+    @GetCurrentUser() currentUser: CurrentUser,
+    @CurrentTenantId() tenantId: string,
+  ) {
+    return this.attendanceService.clockOut(currentUser.userId, tenantId);
   }
 
   @Post('attendance/break/start')
   @Roles('tenant_user', 'tenant_admin')
   @ApiOperation({ summary: '休憩開始' })
   @ApiCreatedResponse({ type: BreakRecordResponseDto })
-  breakStart(@GetCurrentUser() currentUser: CurrentUser) {
-    return this.attendanceService.breakStart(
-      currentUser.userId,
-      currentUser.tenantId!,
-    );
+  breakStart(
+    @GetCurrentUser() currentUser: CurrentUser,
+    @CurrentTenantId() tenantId: string,
+  ) {
+    return this.attendanceService.breakStart(currentUser.userId, tenantId);
   }
 
   @Post('attendance/break/end')
   @Roles('tenant_user', 'tenant_admin')
   @ApiOperation({ summary: '休憩終了' })
   @ApiOkResponse({ type: BreakRecordResponseDto })
-  breakEnd(@GetCurrentUser() currentUser: CurrentUser) {
-    return this.attendanceService.breakEnd(
-      currentUser.userId,
-      currentUser.tenantId!,
-    );
+  breakEnd(
+    @GetCurrentUser() currentUser: CurrentUser,
+    @CurrentTenantId() tenantId: string,
+  ) {
+    return this.attendanceService.breakEnd(currentUser.userId, tenantId);
   }
 
   @Get('attendance/today')
   @Roles('tenant_user', 'tenant_admin')
   @ApiOperation({ summary: '本日の勤怠状態取得' })
   @ApiOkResponse({ type: AttendanceResponseDto })
-  getToday(@GetCurrentUser() currentUser: CurrentUser) {
-    return this.attendanceService.getToday(
-      currentUser.userId,
-      currentUser.tenantId!,
-    );
+  getToday(
+    @GetCurrentUser() currentUser: CurrentUser,
+    @CurrentTenantId() tenantId: string,
+  ) {
+    return this.attendanceService.getToday(currentUser.userId, tenantId);
   }
 
   // --- 自身の勤怠一覧（tenant_user） ---
@@ -95,14 +97,13 @@ export class AttendanceController {
   @ApiQuery({ name: 'limit', required: false, type: Number })
   @ApiOkResponse({ type: AttendanceListResponseDto })
   findMine(
-    @GetCurrentUser() currentUser: CurrentUser,
+    @CurrentTenantId() tenantId: string,
     @Query('year') year?: number,
     @Query('month') month?: number,
     @Query('page') page?: number,
     @Query('limit') limit?: number,
   ) {
-    // employeeId は自分のものに限定 → findAll で自分の employee を検索
-    return this.attendanceService.findAll(currentUser.tenantId!, {
+    return this.attendanceService.findAll(tenantId, {
       year: year ? Number(year) : undefined,
       month: month ? Number(month) : undefined,
       page,
@@ -117,11 +118,11 @@ export class AttendanceController {
   @ApiQuery({ name: 'month', required: true, type: Number })
   @ApiOkResponse({ type: AttendanceSummaryResponseDto })
   getMySummary(
-    @GetCurrentUser() currentUser: CurrentUser,
+    @CurrentTenantId() tenantId: string,
     @Query('year') year: number,
     @Query('month') month: number,
   ) {
-    return this.attendanceService.getSummary(currentUser.tenantId!, {
+    return this.attendanceService.getSummary(tenantId, {
       year: Number(year),
       month: Number(month),
     });
@@ -139,14 +140,14 @@ export class AttendanceController {
   @ApiQuery({ name: 'limit', required: false, type: Number })
   @ApiOkResponse({ type: AttendanceListResponseDto })
   findAllAdmin(
-    @GetCurrentUser() currentUser: CurrentUser,
+    @CurrentTenantId() tenantId: string,
     @Query('employee_id') employeeId?: string,
     @Query('year') year?: number,
     @Query('month') month?: number,
     @Query('page') page?: number,
     @Query('limit') limit?: number,
   ) {
-    return this.attendanceService.findAll(currentUser.tenantId!, {
+    return this.attendanceService.findAll(tenantId, {
       employeeId,
       year: year ? Number(year) : undefined,
       month: month ? Number(month) : undefined,
@@ -163,12 +164,12 @@ export class AttendanceController {
   @ApiQuery({ name: 'month', required: true, type: Number })
   @ApiOkResponse({ type: AttendanceSummaryResponseDto })
   getAdminSummary(
-    @GetCurrentUser() currentUser: CurrentUser,
+    @CurrentTenantId() tenantId: string,
     @Query('employee_id') employeeId?: string,
     @Query('year') year?: number,
     @Query('month') month?: number,
   ) {
-    return this.attendanceService.getSummary(currentUser.tenantId!, {
+    return this.attendanceService.getSummary(tenantId, {
       employeeId,
       year: Number(year),
       month: Number(month),

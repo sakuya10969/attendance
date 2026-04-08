@@ -16,9 +16,11 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { GetCurrentUser } from '../share/decorators/current-user.decorator';
+import { CurrentTenantId } from '../share/decorators/current-tenant-id.decorator';
 import { Roles } from '../share/decorators/roles.decorator';
 import { AuthGuard } from '../share/guards/auth.guard';
 import { RolesGuard } from '../share/guards/roles.guard';
+import { TenantGuard } from '../share/guards/tenant.guard';
 import type { CurrentUser } from '../share/types/current-user.type';
 import { ActionMessageResponseDto } from '../share/dto/action-message-response.dto';
 import { ClockCorrectionsService } from './clock-corrections.service';
@@ -31,7 +33,7 @@ import { CreateClockCorrectionDto } from './dto/create-clock-correction.dto';
 
 @ApiTags('clock-corrections')
 @ApiBearerAuth()
-@UseGuards(AuthGuard, RolesGuard)
+@UseGuards(AuthGuard, RolesGuard, TenantGuard)
 @Controller('api/v1')
 export class ClockCorrectionsController {
   constructor(
@@ -45,11 +47,12 @@ export class ClockCorrectionsController {
   create(
     @Body() dto: CreateClockCorrectionDto,
     @GetCurrentUser() currentUser: CurrentUser,
+    @CurrentTenantId() tenantId: string,
   ) {
     return this.clockCorrectionsService.create(
       dto,
       currentUser.userId,
-      currentUser.tenantId!,
+      tenantId,
     );
   }
 
@@ -61,16 +64,14 @@ export class ClockCorrectionsController {
   @ApiOkResponse({ type: ClockCorrectionListResponseDto })
   findMine(
     @GetCurrentUser() currentUser: CurrentUser,
+    @CurrentTenantId() tenantId: string,
     @Query('page') page?: number,
     @Query('limit') limit?: number,
   ) {
     return this.clockCorrectionsService.findMine(
       currentUser.userId,
-      currentUser.tenantId!,
-      {
-        page,
-        limit,
-      },
+      tenantId,
+      { page, limit },
     );
   }
 
@@ -81,11 +82,11 @@ export class ClockCorrectionsController {
   @ApiQuery({ name: 'limit', required: false, type: Number })
   @ApiOkResponse({ type: ClockCorrectionAdminListResponseDto })
   findAllAdmin(
-    @GetCurrentUser() currentUser: CurrentUser,
+    @CurrentTenantId() tenantId: string,
     @Query('page') page?: number,
     @Query('limit') limit?: number,
   ) {
-    return this.clockCorrectionsService.findAllAdmin(currentUser.tenantId!, {
+    return this.clockCorrectionsService.findAllAdmin(tenantId, {
       page,
       limit,
     });
@@ -95,10 +96,14 @@ export class ClockCorrectionsController {
   @Roles('tenant_admin')
   @ApiOperation({ summary: '承認' })
   @ApiOkResponse({ type: ActionMessageResponseDto })
-  approve(@Param('id') id: string, @GetCurrentUser() currentUser: CurrentUser) {
+  approve(
+    @Param('id') id: string,
+    @CurrentTenantId() tenantId: string,
+    @GetCurrentUser() currentUser: CurrentUser,
+  ) {
     return this.clockCorrectionsService.approve(
       id,
-      currentUser.tenantId!,
+      tenantId,
       currentUser.userId,
     );
   }
@@ -107,10 +112,14 @@ export class ClockCorrectionsController {
   @Roles('tenant_admin')
   @ApiOperation({ summary: '差し戻し' })
   @ApiOkResponse({ type: ActionMessageResponseDto })
-  reject(@Param('id') id: string, @GetCurrentUser() currentUser: CurrentUser) {
+  reject(
+    @Param('id') id: string,
+    @CurrentTenantId() tenantId: string,
+    @GetCurrentUser() currentUser: CurrentUser,
+  ) {
     return this.clockCorrectionsService.reject(
       id,
-      currentUser.tenantId!,
+      tenantId,
       currentUser.userId,
     );
   }
