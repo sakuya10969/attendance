@@ -91,14 +91,17 @@ export default function SystemTenantsRoute() {
         cell: ({ row }) => <StatusBadge value={row.original.status} />,
       },
       {
+        id: "userCount",
         header: "ユーザー数",
         cell: ({ row }) => `${row.original._count.users}名`,
       },
       {
+        id: "createdAt",
         header: "作成日時",
         cell: ({ row }) => formatDateTime(row.original.createdAt),
       },
       {
+        id: "actions",
         header: "",
         cell: ({ row }) =>
           row.original.status === "active" ? (
