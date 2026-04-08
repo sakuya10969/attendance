@@ -36,7 +36,7 @@ async function bootstrap() {
   SwaggerModule.setup('api/docs', app, document)
 
   // Swagger JSONをファイルに書き出し（サーバー起動のたびに最新化）
-  const swaggerOutputPath = resolve(__dirname, '..', 'swagger.json')
+  const swaggerOutputPath = resolve(process.cwd(), 'swagger.json')
   writeFileSync(swaggerOutputPath, JSON.stringify(document, null, 2), 'utf-8')
   console.log(`Swagger JSON written to ${swaggerOutputPath}`)
 
