@@ -28,10 +28,14 @@ import type {
   AttendanceControllerFindAllAdminParams,
   AttendanceControllerFindMineParams,
   AttendanceControllerGetAdminSummaryParams,
-  AttendanceControllerGetMySummaryParams
+  AttendanceControllerGetMySummaryParams,
+  AttendanceListResponseDto,
+  AttendanceResponseDto,
+  AttendanceSummaryResponseDto,
+  BreakRecordResponseDto
 } from '../../model';
 
-import { customAxios } from '../../http-client';
+import { httpRequest } from '../../http-client';
 
 
 
@@ -45,7 +49,7 @@ export const attendanceControllerClockIn = (
 ) => {
 
 
-      return customAxios<void>(
+      return httpRequest<AttendanceResponseDto>(
       {url: `/api/v1/attendance/clock-in`, method: 'POST', signal
     },
       );
@@ -106,7 +110,7 @@ export const attendanceControllerClockOut = (
 ) => {
 
 
-      return customAxios<void>(
+      return httpRequest<AttendanceResponseDto>(
       {url: `/api/v1/attendance/clock-out`, method: 'POST', signal
     },
       );
@@ -167,7 +171,7 @@ export const attendanceControllerBreakStart = (
 ) => {
 
 
-      return customAxios<void>(
+      return httpRequest<BreakRecordResponseDto>(
       {url: `/api/v1/attendance/break/start`, method: 'POST', signal
     },
       );
@@ -228,7 +232,7 @@ export const attendanceControllerBreakEnd = (
 ) => {
 
 
-      return customAxios<void>(
+      return httpRequest<BreakRecordResponseDto>(
       {url: `/api/v1/attendance/break/end`, method: 'POST', signal
     },
       );
@@ -289,7 +293,7 @@ export const attendanceControllerGetToday = (
 ) => {
 
 
-      return customAxios<void>(
+      return httpRequest<AttendanceResponseDto>(
       {url: `/api/v1/attendance/today`, method: 'GET', signal
     },
       );
@@ -374,12 +378,12 @@ export function useAttendanceControllerGetToday<TData = Awaited<ReturnType<typeo
  * @summary 自身の勤怠一覧（月指定）
  */
 export const attendanceControllerFindMine = (
-    params: AttendanceControllerFindMineParams,
+    params?: AttendanceControllerFindMineParams,
  signal?: AbortSignal
 ) => {
 
 
-      return customAxios<void>(
+      return httpRequest<AttendanceListResponseDto>(
       {url: `/api/v1/attendance`, method: 'GET',
         params, signal
     },
@@ -396,7 +400,7 @@ export const getAttendanceControllerFindMineQueryKey = (params?: AttendanceContr
     }
 
 
-export const getAttendanceControllerFindMineQueryOptions = <TData = Awaited<ReturnType<typeof attendanceControllerFindMine>>, TError = unknown>(params: AttendanceControllerFindMineParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof attendanceControllerFindMine>>, TError, TData>>, }
+export const getAttendanceControllerFindMineQueryOptions = <TData = Awaited<ReturnType<typeof attendanceControllerFindMine>>, TError = unknown>(params?: AttendanceControllerFindMineParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof attendanceControllerFindMine>>, TError, TData>>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
@@ -419,7 +423,7 @@ export type AttendanceControllerFindMineQueryError = unknown
 
 
 export function useAttendanceControllerFindMine<TData = Awaited<ReturnType<typeof attendanceControllerFindMine>>, TError = unknown>(
- params: AttendanceControllerFindMineParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof attendanceControllerFindMine>>, TError, TData>> & Pick<
+ params: undefined |  AttendanceControllerFindMineParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof attendanceControllerFindMine>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof attendanceControllerFindMine>>,
           TError,
@@ -429,7 +433,7 @@ export function useAttendanceControllerFindMine<TData = Awaited<ReturnType<typeo
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useAttendanceControllerFindMine<TData = Awaited<ReturnType<typeof attendanceControllerFindMine>>, TError = unknown>(
- params: AttendanceControllerFindMineParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof attendanceControllerFindMine>>, TError, TData>> & Pick<
+ params?: AttendanceControllerFindMineParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof attendanceControllerFindMine>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof attendanceControllerFindMine>>,
           TError,
@@ -439,7 +443,7 @@ export function useAttendanceControllerFindMine<TData = Awaited<ReturnType<typeo
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useAttendanceControllerFindMine<TData = Awaited<ReturnType<typeof attendanceControllerFindMine>>, TError = unknown>(
- params: AttendanceControllerFindMineParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof attendanceControllerFindMine>>, TError, TData>>, }
+ params?: AttendanceControllerFindMineParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof attendanceControllerFindMine>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
@@ -447,7 +451,7 @@ export function useAttendanceControllerFindMine<TData = Awaited<ReturnType<typeo
  */
 
 export function useAttendanceControllerFindMine<TData = Awaited<ReturnType<typeof attendanceControllerFindMine>>, TError = unknown>(
- params: AttendanceControllerFindMineParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof attendanceControllerFindMine>>, TError, TData>>, }
+ params?: AttendanceControllerFindMineParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof attendanceControllerFindMine>>, TError, TData>>, }
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
@@ -470,7 +474,7 @@ export const attendanceControllerGetMySummary = (
 ) => {
 
 
-      return customAxios<void>(
+      return httpRequest<AttendanceSummaryResponseDto>(
       {url: `/api/v1/attendance/summary`, method: 'GET',
         params, signal
     },
@@ -556,12 +560,12 @@ export function useAttendanceControllerGetMySummary<TData = Awaited<ReturnType<t
  * @summary テナント内全従業員の勤怠一覧（tenant_admin）
  */
 export const attendanceControllerFindAllAdmin = (
-    params: AttendanceControllerFindAllAdminParams,
+    params?: AttendanceControllerFindAllAdminParams,
  signal?: AbortSignal
 ) => {
 
 
-      return customAxios<void>(
+      return httpRequest<AttendanceListResponseDto>(
       {url: `/api/v1/admin/attendance`, method: 'GET',
         params, signal
     },
@@ -578,7 +582,7 @@ export const getAttendanceControllerFindAllAdminQueryKey = (params?: AttendanceC
     }
 
 
-export const getAttendanceControllerFindAllAdminQueryOptions = <TData = Awaited<ReturnType<typeof attendanceControllerFindAllAdmin>>, TError = unknown>(params: AttendanceControllerFindAllAdminParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof attendanceControllerFindAllAdmin>>, TError, TData>>, }
+export const getAttendanceControllerFindAllAdminQueryOptions = <TData = Awaited<ReturnType<typeof attendanceControllerFindAllAdmin>>, TError = unknown>(params?: AttendanceControllerFindAllAdminParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof attendanceControllerFindAllAdmin>>, TError, TData>>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
@@ -601,7 +605,7 @@ export type AttendanceControllerFindAllAdminQueryError = unknown
 
 
 export function useAttendanceControllerFindAllAdmin<TData = Awaited<ReturnType<typeof attendanceControllerFindAllAdmin>>, TError = unknown>(
- params: AttendanceControllerFindAllAdminParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof attendanceControllerFindAllAdmin>>, TError, TData>> & Pick<
+ params: undefined |  AttendanceControllerFindAllAdminParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof attendanceControllerFindAllAdmin>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof attendanceControllerFindAllAdmin>>,
           TError,
@@ -611,7 +615,7 @@ export function useAttendanceControllerFindAllAdmin<TData = Awaited<ReturnType<t
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useAttendanceControllerFindAllAdmin<TData = Awaited<ReturnType<typeof attendanceControllerFindAllAdmin>>, TError = unknown>(
- params: AttendanceControllerFindAllAdminParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof attendanceControllerFindAllAdmin>>, TError, TData>> & Pick<
+ params?: AttendanceControllerFindAllAdminParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof attendanceControllerFindAllAdmin>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof attendanceControllerFindAllAdmin>>,
           TError,
@@ -621,7 +625,7 @@ export function useAttendanceControllerFindAllAdmin<TData = Awaited<ReturnType<t
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useAttendanceControllerFindAllAdmin<TData = Awaited<ReturnType<typeof attendanceControllerFindAllAdmin>>, TError = unknown>(
- params: AttendanceControllerFindAllAdminParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof attendanceControllerFindAllAdmin>>, TError, TData>>, }
+ params?: AttendanceControllerFindAllAdminParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof attendanceControllerFindAllAdmin>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
@@ -629,7 +633,7 @@ export function useAttendanceControllerFindAllAdmin<TData = Awaited<ReturnType<t
  */
 
 export function useAttendanceControllerFindAllAdmin<TData = Awaited<ReturnType<typeof attendanceControllerFindAllAdmin>>, TError = unknown>(
- params: AttendanceControllerFindAllAdminParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof attendanceControllerFindAllAdmin>>, TError, TData>>, }
+ params?: AttendanceControllerFindAllAdminParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof attendanceControllerFindAllAdmin>>, TError, TData>>, }
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
@@ -652,7 +656,7 @@ export const attendanceControllerGetAdminSummary = (
 ) => {
 
 
-      return customAxios<void>(
+      return httpRequest<AttendanceSummaryResponseDto>(
       {url: `/api/v1/admin/attendance/summary`, method: 'GET',
         params, signal
     },

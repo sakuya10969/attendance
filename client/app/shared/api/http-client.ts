@@ -20,7 +20,7 @@ apiClient.interceptors.request.use(async (config) => {
  * Orval custom mutator
  * Orvalが生成するAPIクライアントはこの関数を経由してリクエストを送る
  */
-export const customAxios = async <T>(config: AxiosRequestConfig): Promise<T> => {
+export const httpRequest = async <T>(config: AxiosRequestConfig): Promise<T> => {
   const { data } = await apiClient(config);
   return data;
 };

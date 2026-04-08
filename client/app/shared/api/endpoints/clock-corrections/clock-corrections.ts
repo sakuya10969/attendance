@@ -25,12 +25,16 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  ActionMessageResponseDto,
+  ClockCorrectionAdminListResponseDto,
+  ClockCorrectionListResponseDto,
+  ClockCorrectionResponseDto,
   ClockCorrectionsControllerFindAllAdminParams,
   ClockCorrectionsControllerFindMineParams,
   CreateClockCorrectionDto
 } from '../../model';
 
-import { customAxios } from '../../http-client';
+import { httpRequest } from '../../http-client';
 
 
 
@@ -44,7 +48,7 @@ export const clockCorrectionsControllerCreate = (
 ) => {
 
 
-      return customAxios<void>(
+      return httpRequest<ClockCorrectionResponseDto>(
       {url: `/api/v1/clock-corrections`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createClockCorrectionDto, signal
@@ -102,12 +106,12 @@ export const useClockCorrectionsControllerCreate = <TError = unknown,
  * @summary 自身の修正申請一覧
  */
 export const clockCorrectionsControllerFindMine = (
-    params: ClockCorrectionsControllerFindMineParams,
+    params?: ClockCorrectionsControllerFindMineParams,
  signal?: AbortSignal
 ) => {
 
 
-      return customAxios<void>(
+      return httpRequest<ClockCorrectionListResponseDto>(
       {url: `/api/v1/clock-corrections`, method: 'GET',
         params, signal
     },
@@ -124,7 +128,7 @@ export const getClockCorrectionsControllerFindMineQueryKey = (params?: ClockCorr
     }
 
 
-export const getClockCorrectionsControllerFindMineQueryOptions = <TData = Awaited<ReturnType<typeof clockCorrectionsControllerFindMine>>, TError = unknown>(params: ClockCorrectionsControllerFindMineParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof clockCorrectionsControllerFindMine>>, TError, TData>>, }
+export const getClockCorrectionsControllerFindMineQueryOptions = <TData = Awaited<ReturnType<typeof clockCorrectionsControllerFindMine>>, TError = unknown>(params?: ClockCorrectionsControllerFindMineParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof clockCorrectionsControllerFindMine>>, TError, TData>>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
@@ -147,7 +151,7 @@ export type ClockCorrectionsControllerFindMineQueryError = unknown
 
 
 export function useClockCorrectionsControllerFindMine<TData = Awaited<ReturnType<typeof clockCorrectionsControllerFindMine>>, TError = unknown>(
- params: ClockCorrectionsControllerFindMineParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof clockCorrectionsControllerFindMine>>, TError, TData>> & Pick<
+ params: undefined |  ClockCorrectionsControllerFindMineParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof clockCorrectionsControllerFindMine>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof clockCorrectionsControllerFindMine>>,
           TError,
@@ -157,7 +161,7 @@ export function useClockCorrectionsControllerFindMine<TData = Awaited<ReturnType
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useClockCorrectionsControllerFindMine<TData = Awaited<ReturnType<typeof clockCorrectionsControllerFindMine>>, TError = unknown>(
- params: ClockCorrectionsControllerFindMineParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof clockCorrectionsControllerFindMine>>, TError, TData>> & Pick<
+ params?: ClockCorrectionsControllerFindMineParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof clockCorrectionsControllerFindMine>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof clockCorrectionsControllerFindMine>>,
           TError,
@@ -167,7 +171,7 @@ export function useClockCorrectionsControllerFindMine<TData = Awaited<ReturnType
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useClockCorrectionsControllerFindMine<TData = Awaited<ReturnType<typeof clockCorrectionsControllerFindMine>>, TError = unknown>(
- params: ClockCorrectionsControllerFindMineParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof clockCorrectionsControllerFindMine>>, TError, TData>>, }
+ params?: ClockCorrectionsControllerFindMineParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof clockCorrectionsControllerFindMine>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
@@ -175,7 +179,7 @@ export function useClockCorrectionsControllerFindMine<TData = Awaited<ReturnType
  */
 
 export function useClockCorrectionsControllerFindMine<TData = Awaited<ReturnType<typeof clockCorrectionsControllerFindMine>>, TError = unknown>(
- params: ClockCorrectionsControllerFindMineParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof clockCorrectionsControllerFindMine>>, TError, TData>>, }
+ params?: ClockCorrectionsControllerFindMineParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof clockCorrectionsControllerFindMine>>, TError, TData>>, }
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
@@ -193,12 +197,12 @@ export function useClockCorrectionsControllerFindMine<TData = Awaited<ReturnType
  * @summary テナント内申請一覧（tenant_admin）
  */
 export const clockCorrectionsControllerFindAllAdmin = (
-    params: ClockCorrectionsControllerFindAllAdminParams,
+    params?: ClockCorrectionsControllerFindAllAdminParams,
  signal?: AbortSignal
 ) => {
 
 
-      return customAxios<void>(
+      return httpRequest<ClockCorrectionAdminListResponseDto>(
       {url: `/api/v1/admin/clock-corrections`, method: 'GET',
         params, signal
     },
@@ -215,7 +219,7 @@ export const getClockCorrectionsControllerFindAllAdminQueryKey = (params?: Clock
     }
 
 
-export const getClockCorrectionsControllerFindAllAdminQueryOptions = <TData = Awaited<ReturnType<typeof clockCorrectionsControllerFindAllAdmin>>, TError = unknown>(params: ClockCorrectionsControllerFindAllAdminParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof clockCorrectionsControllerFindAllAdmin>>, TError, TData>>, }
+export const getClockCorrectionsControllerFindAllAdminQueryOptions = <TData = Awaited<ReturnType<typeof clockCorrectionsControllerFindAllAdmin>>, TError = unknown>(params?: ClockCorrectionsControllerFindAllAdminParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof clockCorrectionsControllerFindAllAdmin>>, TError, TData>>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
@@ -238,7 +242,7 @@ export type ClockCorrectionsControllerFindAllAdminQueryError = unknown
 
 
 export function useClockCorrectionsControllerFindAllAdmin<TData = Awaited<ReturnType<typeof clockCorrectionsControllerFindAllAdmin>>, TError = unknown>(
- params: ClockCorrectionsControllerFindAllAdminParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof clockCorrectionsControllerFindAllAdmin>>, TError, TData>> & Pick<
+ params: undefined |  ClockCorrectionsControllerFindAllAdminParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof clockCorrectionsControllerFindAllAdmin>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof clockCorrectionsControllerFindAllAdmin>>,
           TError,
@@ -248,7 +252,7 @@ export function useClockCorrectionsControllerFindAllAdmin<TData = Awaited<Return
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useClockCorrectionsControllerFindAllAdmin<TData = Awaited<ReturnType<typeof clockCorrectionsControllerFindAllAdmin>>, TError = unknown>(
- params: ClockCorrectionsControllerFindAllAdminParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof clockCorrectionsControllerFindAllAdmin>>, TError, TData>> & Pick<
+ params?: ClockCorrectionsControllerFindAllAdminParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof clockCorrectionsControllerFindAllAdmin>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof clockCorrectionsControllerFindAllAdmin>>,
           TError,
@@ -258,7 +262,7 @@ export function useClockCorrectionsControllerFindAllAdmin<TData = Awaited<Return
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useClockCorrectionsControllerFindAllAdmin<TData = Awaited<ReturnType<typeof clockCorrectionsControllerFindAllAdmin>>, TError = unknown>(
- params: ClockCorrectionsControllerFindAllAdminParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof clockCorrectionsControllerFindAllAdmin>>, TError, TData>>, }
+ params?: ClockCorrectionsControllerFindAllAdminParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof clockCorrectionsControllerFindAllAdmin>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
@@ -266,7 +270,7 @@ export function useClockCorrectionsControllerFindAllAdmin<TData = Awaited<Return
  */
 
 export function useClockCorrectionsControllerFindAllAdmin<TData = Awaited<ReturnType<typeof clockCorrectionsControllerFindAllAdmin>>, TError = unknown>(
- params: ClockCorrectionsControllerFindAllAdminParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof clockCorrectionsControllerFindAllAdmin>>, TError, TData>>, }
+ params?: ClockCorrectionsControllerFindAllAdminParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof clockCorrectionsControllerFindAllAdmin>>, TError, TData>>, }
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
@@ -289,7 +293,7 @@ export const clockCorrectionsControllerApprove = (
 ) => {
 
 
-      return customAxios<void>(
+      return httpRequest<ActionMessageResponseDto>(
       {url: `/api/v1/admin/clock-corrections/${id}/approve`, method: 'POST', signal
     },
       );
@@ -350,7 +354,7 @@ export const clockCorrectionsControllerReject = (
 ) => {
 
 
-      return customAxios<void>(
+      return httpRequest<ActionMessageResponseDto>(
       {url: `/api/v1/admin/clock-corrections/${id}/reject`, method: 'POST', signal
     },
       );

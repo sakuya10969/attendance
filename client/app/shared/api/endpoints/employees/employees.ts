@@ -26,11 +26,13 @@ import type {
 
 import type {
   CreateEmployeeDto,
+  EmployeeListResponseDto,
+  EmployeeResponseDto,
   EmployeesControllerFindAllParams,
   UpdateEmployeeDto
 } from '../../model';
 
-import { customAxios } from '../../http-client';
+import { httpRequest } from '../../http-client';
 
 
 
@@ -44,7 +46,7 @@ export const employeesControllerCreate = (
 ) => {
 
 
-      return customAxios<void>(
+      return httpRequest<EmployeeResponseDto>(
       {url: `/api/v1/employees`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createEmployeeDto, signal
@@ -102,12 +104,12 @@ export const useEmployeesControllerCreate = <TError = unknown,
  * @summary 従業員一覧
  */
 export const employeesControllerFindAll = (
-    params: EmployeesControllerFindAllParams,
+    params?: EmployeesControllerFindAllParams,
  signal?: AbortSignal
 ) => {
 
 
-      return customAxios<void>(
+      return httpRequest<EmployeeListResponseDto>(
       {url: `/api/v1/employees`, method: 'GET',
         params, signal
     },
@@ -124,7 +126,7 @@ export const getEmployeesControllerFindAllQueryKey = (params?: EmployeesControll
     }
 
 
-export const getEmployeesControllerFindAllQueryOptions = <TData = Awaited<ReturnType<typeof employeesControllerFindAll>>, TError = unknown>(params: EmployeesControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof employeesControllerFindAll>>, TError, TData>>, }
+export const getEmployeesControllerFindAllQueryOptions = <TData = Awaited<ReturnType<typeof employeesControllerFindAll>>, TError = unknown>(params?: EmployeesControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof employeesControllerFindAll>>, TError, TData>>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
@@ -147,7 +149,7 @@ export type EmployeesControllerFindAllQueryError = unknown
 
 
 export function useEmployeesControllerFindAll<TData = Awaited<ReturnType<typeof employeesControllerFindAll>>, TError = unknown>(
- params: EmployeesControllerFindAllParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof employeesControllerFindAll>>, TError, TData>> & Pick<
+ params: undefined |  EmployeesControllerFindAllParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof employeesControllerFindAll>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof employeesControllerFindAll>>,
           TError,
@@ -157,7 +159,7 @@ export function useEmployeesControllerFindAll<TData = Awaited<ReturnType<typeof 
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useEmployeesControllerFindAll<TData = Awaited<ReturnType<typeof employeesControllerFindAll>>, TError = unknown>(
- params: EmployeesControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof employeesControllerFindAll>>, TError, TData>> & Pick<
+ params?: EmployeesControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof employeesControllerFindAll>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof employeesControllerFindAll>>,
           TError,
@@ -167,7 +169,7 @@ export function useEmployeesControllerFindAll<TData = Awaited<ReturnType<typeof 
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useEmployeesControllerFindAll<TData = Awaited<ReturnType<typeof employeesControllerFindAll>>, TError = unknown>(
- params: EmployeesControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof employeesControllerFindAll>>, TError, TData>>, }
+ params?: EmployeesControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof employeesControllerFindAll>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
@@ -175,7 +177,7 @@ export function useEmployeesControllerFindAll<TData = Awaited<ReturnType<typeof 
  */
 
 export function useEmployeesControllerFindAll<TData = Awaited<ReturnType<typeof employeesControllerFindAll>>, TError = unknown>(
- params: EmployeesControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof employeesControllerFindAll>>, TError, TData>>, }
+ params?: EmployeesControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof employeesControllerFindAll>>, TError, TData>>, }
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
@@ -198,7 +200,7 @@ export const employeesControllerFindOne = (
 ) => {
 
 
-      return customAxios<void>(
+      return httpRequest<EmployeeResponseDto>(
       {url: `/api/v1/employees/${id}`, method: 'GET', signal
     },
       );
@@ -289,7 +291,7 @@ export const employeesControllerUpdate = (
 ) => {
 
 
-      return customAxios<void>(
+      return httpRequest<EmployeeResponseDto>(
       {url: `/api/v1/employees/${id}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: updateEmployeeDto, signal

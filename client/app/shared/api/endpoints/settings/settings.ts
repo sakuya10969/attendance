@@ -26,10 +26,12 @@ import type {
 
 import type {
   CreateDepartmentDto,
-  CreateWorkPatternDto
+  CreateWorkPatternDto,
+  DepartmentResponseDto,
+  WorkPatternResponseDto
 } from '../../model';
 
-import { customAxios } from '../../http-client';
+import { httpRequest } from '../../http-client';
 
 
 
@@ -43,7 +45,7 @@ export const settingsControllerCreateDepartment = (
 ) => {
 
 
-      return customAxios<void>(
+      return httpRequest<DepartmentResponseDto>(
       {url: `/api/v1/admin/departments`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createDepartmentDto, signal
@@ -106,7 +108,7 @@ export const settingsControllerFindDepartments = (
 ) => {
 
 
-      return customAxios<void>(
+      return httpRequest<DepartmentResponseDto[]>(
       {url: `/api/v1/admin/departments`, method: 'GET', signal
     },
       );
@@ -197,7 +199,7 @@ export const settingsControllerUpdateDepartment = (
 ) => {
 
 
-      return customAxios<void>(
+      return httpRequest<DepartmentResponseDto>(
       {url: `/api/v1/admin/departments/${id}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: createDepartmentDto, signal
@@ -260,7 +262,7 @@ export const settingsControllerCreateWorkPattern = (
 ) => {
 
 
-      return customAxios<void>(
+      return httpRequest<WorkPatternResponseDto>(
       {url: `/api/v1/admin/work-patterns`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createWorkPatternDto, signal
@@ -323,7 +325,7 @@ export const settingsControllerFindWorkPatterns = (
 ) => {
 
 
-      return customAxios<void>(
+      return httpRequest<WorkPatternResponseDto[]>(
       {url: `/api/v1/admin/work-patterns`, method: 'GET', signal
     },
       );
@@ -414,7 +416,7 @@ export const settingsControllerUpdateWorkPattern = (
 ) => {
 
 
-      return customAxios<void>(
+      return httpRequest<WorkPatternResponseDto>(
       {url: `/api/v1/admin/work-patterns/${id}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: createWorkPatternDto, signal

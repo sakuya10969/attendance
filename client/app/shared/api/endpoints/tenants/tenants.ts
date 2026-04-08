@@ -26,11 +26,15 @@ import type {
 
 import type {
   CreateTenantDto,
+  CreateTenantResponseDto,
+  TenantListResponseDto,
+  TenantResponseDto,
+  TenantWithCountResponseDto,
   TenantsControllerFindAllParams,
   UpdateTenantDto
 } from '../../model';
 
-import { customAxios } from '../../http-client';
+import { httpRequest } from '../../http-client';
 
 
 
@@ -44,7 +48,7 @@ export const tenantsControllerCreate = (
 ) => {
 
 
-      return customAxios<void>(
+      return httpRequest<CreateTenantResponseDto>(
       {url: `/api/v1/tenants`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createTenantDto, signal
@@ -102,12 +106,12 @@ export const useTenantsControllerCreate = <TError = unknown,
  * @summary テナント一覧
  */
 export const tenantsControllerFindAll = (
-    params: TenantsControllerFindAllParams,
+    params?: TenantsControllerFindAllParams,
  signal?: AbortSignal
 ) => {
 
 
-      return customAxios<void>(
+      return httpRequest<TenantListResponseDto>(
       {url: `/api/v1/tenants`, method: 'GET',
         params, signal
     },
@@ -124,7 +128,7 @@ export const getTenantsControllerFindAllQueryKey = (params?: TenantsControllerFi
     }
 
 
-export const getTenantsControllerFindAllQueryOptions = <TData = Awaited<ReturnType<typeof tenantsControllerFindAll>>, TError = unknown>(params: TenantsControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof tenantsControllerFindAll>>, TError, TData>>, }
+export const getTenantsControllerFindAllQueryOptions = <TData = Awaited<ReturnType<typeof tenantsControllerFindAll>>, TError = unknown>(params?: TenantsControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof tenantsControllerFindAll>>, TError, TData>>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
@@ -147,7 +151,7 @@ export type TenantsControllerFindAllQueryError = unknown
 
 
 export function useTenantsControllerFindAll<TData = Awaited<ReturnType<typeof tenantsControllerFindAll>>, TError = unknown>(
- params: TenantsControllerFindAllParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof tenantsControllerFindAll>>, TError, TData>> & Pick<
+ params: undefined |  TenantsControllerFindAllParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof tenantsControllerFindAll>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof tenantsControllerFindAll>>,
           TError,
@@ -157,7 +161,7 @@ export function useTenantsControllerFindAll<TData = Awaited<ReturnType<typeof te
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useTenantsControllerFindAll<TData = Awaited<ReturnType<typeof tenantsControllerFindAll>>, TError = unknown>(
- params: TenantsControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof tenantsControllerFindAll>>, TError, TData>> & Pick<
+ params?: TenantsControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof tenantsControllerFindAll>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof tenantsControllerFindAll>>,
           TError,
@@ -167,7 +171,7 @@ export function useTenantsControllerFindAll<TData = Awaited<ReturnType<typeof te
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useTenantsControllerFindAll<TData = Awaited<ReturnType<typeof tenantsControllerFindAll>>, TError = unknown>(
- params: TenantsControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof tenantsControllerFindAll>>, TError, TData>>, }
+ params?: TenantsControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof tenantsControllerFindAll>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
@@ -175,7 +179,7 @@ export function useTenantsControllerFindAll<TData = Awaited<ReturnType<typeof te
  */
 
 export function useTenantsControllerFindAll<TData = Awaited<ReturnType<typeof tenantsControllerFindAll>>, TError = unknown>(
- params: TenantsControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof tenantsControllerFindAll>>, TError, TData>>, }
+ params?: TenantsControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof tenantsControllerFindAll>>, TError, TData>>, }
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
@@ -198,7 +202,7 @@ export const tenantsControllerFindOne = (
 ) => {
 
 
-      return customAxios<void>(
+      return httpRequest<TenantWithCountResponseDto>(
       {url: `/api/v1/tenants/${id}`, method: 'GET', signal
     },
       );
@@ -289,7 +293,7 @@ export const tenantsControllerUpdate = (
 ) => {
 
 
-      return customAxios<void>(
+      return httpRequest<TenantResponseDto>(
       {url: `/api/v1/tenants/${id}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: updateTenantDto, signal
@@ -352,7 +356,7 @@ export const tenantsControllerSuspend = (
 ) => {
 
 
-      return customAxios<void>(
+      return httpRequest<TenantResponseDto>(
       {url: `/api/v1/tenants/${id}/suspend`, method: 'POST', signal
     },
       );
@@ -413,7 +417,7 @@ export const tenantsControllerResume = (
 ) => {
 
 
-      return customAxios<void>(
+      return httpRequest<TenantResponseDto>(
       {url: `/api/v1/tenants/${id}/resume`, method: 'POST', signal
     },
       );

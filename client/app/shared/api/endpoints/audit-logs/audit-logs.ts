@@ -21,11 +21,12 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  AuditLogListResponseDto,
   AuditLogsControllerFindAllSystemParams,
   AuditLogsControllerFindAllTenantParams
 } from '../../model';
 
-import { customAxios } from '../../http-client';
+import { httpRequest } from '../../http-client';
 
 
 
@@ -34,12 +35,12 @@ import { customAxios } from '../../http-client';
  * @summary 全体監査ログ一覧（system_admin）
  */
 export const auditLogsControllerFindAllSystem = (
-    params: AuditLogsControllerFindAllSystemParams,
+    params?: AuditLogsControllerFindAllSystemParams,
  signal?: AbortSignal
 ) => {
 
 
-      return customAxios<void>(
+      return httpRequest<AuditLogListResponseDto>(
       {url: `/api/v1/system/audit-logs`, method: 'GET',
         params, signal
     },
@@ -56,7 +57,7 @@ export const getAuditLogsControllerFindAllSystemQueryKey = (params?: AuditLogsCo
     }
 
 
-export const getAuditLogsControllerFindAllSystemQueryOptions = <TData = Awaited<ReturnType<typeof auditLogsControllerFindAllSystem>>, TError = unknown>(params: AuditLogsControllerFindAllSystemParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof auditLogsControllerFindAllSystem>>, TError, TData>>, }
+export const getAuditLogsControllerFindAllSystemQueryOptions = <TData = Awaited<ReturnType<typeof auditLogsControllerFindAllSystem>>, TError = unknown>(params?: AuditLogsControllerFindAllSystemParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof auditLogsControllerFindAllSystem>>, TError, TData>>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
@@ -79,7 +80,7 @@ export type AuditLogsControllerFindAllSystemQueryError = unknown
 
 
 export function useAuditLogsControllerFindAllSystem<TData = Awaited<ReturnType<typeof auditLogsControllerFindAllSystem>>, TError = unknown>(
- params: AuditLogsControllerFindAllSystemParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof auditLogsControllerFindAllSystem>>, TError, TData>> & Pick<
+ params: undefined |  AuditLogsControllerFindAllSystemParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof auditLogsControllerFindAllSystem>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof auditLogsControllerFindAllSystem>>,
           TError,
@@ -89,7 +90,7 @@ export function useAuditLogsControllerFindAllSystem<TData = Awaited<ReturnType<t
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useAuditLogsControllerFindAllSystem<TData = Awaited<ReturnType<typeof auditLogsControllerFindAllSystem>>, TError = unknown>(
- params: AuditLogsControllerFindAllSystemParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof auditLogsControllerFindAllSystem>>, TError, TData>> & Pick<
+ params?: AuditLogsControllerFindAllSystemParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof auditLogsControllerFindAllSystem>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof auditLogsControllerFindAllSystem>>,
           TError,
@@ -99,7 +100,7 @@ export function useAuditLogsControllerFindAllSystem<TData = Awaited<ReturnType<t
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useAuditLogsControllerFindAllSystem<TData = Awaited<ReturnType<typeof auditLogsControllerFindAllSystem>>, TError = unknown>(
- params: AuditLogsControllerFindAllSystemParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof auditLogsControllerFindAllSystem>>, TError, TData>>, }
+ params?: AuditLogsControllerFindAllSystemParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof auditLogsControllerFindAllSystem>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
@@ -107,7 +108,7 @@ export function useAuditLogsControllerFindAllSystem<TData = Awaited<ReturnType<t
  */
 
 export function useAuditLogsControllerFindAllSystem<TData = Awaited<ReturnType<typeof auditLogsControllerFindAllSystem>>, TError = unknown>(
- params: AuditLogsControllerFindAllSystemParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof auditLogsControllerFindAllSystem>>, TError, TData>>, }
+ params?: AuditLogsControllerFindAllSystemParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof auditLogsControllerFindAllSystem>>, TError, TData>>, }
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
@@ -125,12 +126,12 @@ export function useAuditLogsControllerFindAllSystem<TData = Awaited<ReturnType<t
  * @summary テナント内監査ログ一覧（tenant_admin）
  */
 export const auditLogsControllerFindAllTenant = (
-    params: AuditLogsControllerFindAllTenantParams,
+    params?: AuditLogsControllerFindAllTenantParams,
  signal?: AbortSignal
 ) => {
 
 
-      return customAxios<void>(
+      return httpRequest<AuditLogListResponseDto>(
       {url: `/api/v1/admin/audit-logs`, method: 'GET',
         params, signal
     },
@@ -147,7 +148,7 @@ export const getAuditLogsControllerFindAllTenantQueryKey = (params?: AuditLogsCo
     }
 
 
-export const getAuditLogsControllerFindAllTenantQueryOptions = <TData = Awaited<ReturnType<typeof auditLogsControllerFindAllTenant>>, TError = unknown>(params: AuditLogsControllerFindAllTenantParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof auditLogsControllerFindAllTenant>>, TError, TData>>, }
+export const getAuditLogsControllerFindAllTenantQueryOptions = <TData = Awaited<ReturnType<typeof auditLogsControllerFindAllTenant>>, TError = unknown>(params?: AuditLogsControllerFindAllTenantParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof auditLogsControllerFindAllTenant>>, TError, TData>>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
@@ -170,7 +171,7 @@ export type AuditLogsControllerFindAllTenantQueryError = unknown
 
 
 export function useAuditLogsControllerFindAllTenant<TData = Awaited<ReturnType<typeof auditLogsControllerFindAllTenant>>, TError = unknown>(
- params: AuditLogsControllerFindAllTenantParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof auditLogsControllerFindAllTenant>>, TError, TData>> & Pick<
+ params: undefined |  AuditLogsControllerFindAllTenantParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof auditLogsControllerFindAllTenant>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof auditLogsControllerFindAllTenant>>,
           TError,
@@ -180,7 +181,7 @@ export function useAuditLogsControllerFindAllTenant<TData = Awaited<ReturnType<t
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useAuditLogsControllerFindAllTenant<TData = Awaited<ReturnType<typeof auditLogsControllerFindAllTenant>>, TError = unknown>(
- params: AuditLogsControllerFindAllTenantParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof auditLogsControllerFindAllTenant>>, TError, TData>> & Pick<
+ params?: AuditLogsControllerFindAllTenantParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof auditLogsControllerFindAllTenant>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof auditLogsControllerFindAllTenant>>,
           TError,
@@ -190,7 +191,7 @@ export function useAuditLogsControllerFindAllTenant<TData = Awaited<ReturnType<t
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useAuditLogsControllerFindAllTenant<TData = Awaited<ReturnType<typeof auditLogsControllerFindAllTenant>>, TError = unknown>(
- params: AuditLogsControllerFindAllTenantParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof auditLogsControllerFindAllTenant>>, TError, TData>>, }
+ params?: AuditLogsControllerFindAllTenantParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof auditLogsControllerFindAllTenant>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
@@ -198,7 +199,7 @@ export function useAuditLogsControllerFindAllTenant<TData = Awaited<ReturnType<t
  */
 
 export function useAuditLogsControllerFindAllTenant<TData = Awaited<ReturnType<typeof auditLogsControllerFindAllTenant>>, TError = unknown>(
- params: AuditLogsControllerFindAllTenantParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof auditLogsControllerFindAllTenant>>, TError, TData>>, }
+ params?: AuditLogsControllerFindAllTenantParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof auditLogsControllerFindAllTenant>>, TError, TData>>, }
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 

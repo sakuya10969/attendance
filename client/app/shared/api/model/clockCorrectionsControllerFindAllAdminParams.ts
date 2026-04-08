@@ -7,6 +7,6 @@
  */
 
 export type ClockCorrectionsControllerFindAllAdminParams = {
-page: number;
-limit: number;
+page?: number;
+limit?: number;
 };

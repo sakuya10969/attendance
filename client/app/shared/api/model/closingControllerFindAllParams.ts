@@ -7,6 +7,6 @@
  */
 
 export type ClosingControllerFindAllParams = {
-page: number;
-limit: number;
+page?: number;
+limit?: number;
 };

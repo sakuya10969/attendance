@@ -7,7 +7,7 @@
  */
 
 export type AttendanceControllerGetAdminSummaryParams = {
-employee_id: string;
+employee_id?: string;
 year: number;
 month: number;
 };

@@ -20,7 +20,11 @@ import type {
   UseQueryResult
 } from '@tanstack/react-query';
 
-import { customAxios } from '../../http-client';
+import type {
+  MeResponseDto
+} from '../../model';
+
+import { httpRequest } from '../../http-client';
 
 
 
@@ -34,7 +38,7 @@ export const authControllerMe = (
 ) => {
 
 
-      return customAxios<void>(
+      return httpRequest<MeResponseDto>(
       {url: `/api/v1/auth/me`, method: 'GET', signal
     },
       );

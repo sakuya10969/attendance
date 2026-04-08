@@ -7,6 +7,6 @@
  */
 
 export type LeaveRequestsControllerFindMineParams = {
-page: number;
-limit: number;
+page?: number;
+limit?: number;
 };

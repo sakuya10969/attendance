@@ -28,10 +28,13 @@ import type {
   CreateUserDto,
   UpdateRoleDto,
   UpdateUserDto,
+  UserListResponseDto,
+  UserResponseDto,
+  UserSummaryResponseDto,
   UsersControllerFindAllParams
 } from '../../model';
 
-import { customAxios } from '../../http-client';
+import { httpRequest } from '../../http-client';
 
 
 
@@ -45,7 +48,7 @@ export const usersControllerCreate = (
 ) => {
 
 
-      return customAxios<void>(
+      return httpRequest<UserResponseDto>(
       {url: `/api/v1/users`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createUserDto, signal
@@ -103,12 +106,12 @@ export const useUsersControllerCreate = <TError = unknown,
  * @summary テナント内ユーザー一覧
  */
 export const usersControllerFindAll = (
-    params: UsersControllerFindAllParams,
+    params?: UsersControllerFindAllParams,
  signal?: AbortSignal
 ) => {
 
 
-      return customAxios<void>(
+      return httpRequest<UserListResponseDto>(
       {url: `/api/v1/users`, method: 'GET',
         params, signal
     },
@@ -125,7 +128,7 @@ export const getUsersControllerFindAllQueryKey = (params?: UsersControllerFindAl
     }
 
 
-export const getUsersControllerFindAllQueryOptions = <TData = Awaited<ReturnType<typeof usersControllerFindAll>>, TError = unknown>(params: UsersControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerFindAll>>, TError, TData>>, }
+export const getUsersControllerFindAllQueryOptions = <TData = Awaited<ReturnType<typeof usersControllerFindAll>>, TError = unknown>(params?: UsersControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerFindAll>>, TError, TData>>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
@@ -148,7 +151,7 @@ export type UsersControllerFindAllQueryError = unknown
 
 
 export function useUsersControllerFindAll<TData = Awaited<ReturnType<typeof usersControllerFindAll>>, TError = unknown>(
- params: UsersControllerFindAllParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerFindAll>>, TError, TData>> & Pick<
+ params: undefined |  UsersControllerFindAllParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerFindAll>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof usersControllerFindAll>>,
           TError,
@@ -158,7 +161,7 @@ export function useUsersControllerFindAll<TData = Awaited<ReturnType<typeof user
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useUsersControllerFindAll<TData = Awaited<ReturnType<typeof usersControllerFindAll>>, TError = unknown>(
- params: UsersControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerFindAll>>, TError, TData>> & Pick<
+ params?: UsersControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerFindAll>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof usersControllerFindAll>>,
           TError,
@@ -168,7 +171,7 @@ export function useUsersControllerFindAll<TData = Awaited<ReturnType<typeof user
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useUsersControllerFindAll<TData = Awaited<ReturnType<typeof usersControllerFindAll>>, TError = unknown>(
- params: UsersControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerFindAll>>, TError, TData>>, }
+ params?: UsersControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerFindAll>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
@@ -176,7 +179,7 @@ export function useUsersControllerFindAll<TData = Awaited<ReturnType<typeof user
  */
 
 export function useUsersControllerFindAll<TData = Awaited<ReturnType<typeof usersControllerFindAll>>, TError = unknown>(
- params: UsersControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerFindAll>>, TError, TData>>, }
+ params?: UsersControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof usersControllerFindAll>>, TError, TData>>, }
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
@@ -199,7 +202,7 @@ export const usersControllerFindOne = (
 ) => {
 
 
-      return customAxios<void>(
+      return httpRequest<UserSummaryResponseDto>(
       {url: `/api/v1/users/${id}`, method: 'GET', signal
     },
       );
@@ -290,7 +293,7 @@ export const usersControllerUpdate = (
 ) => {
 
 
-      return customAxios<void>(
+      return httpRequest<UserResponseDto>(
       {url: `/api/v1/users/${id}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: updateUserDto, signal
@@ -354,7 +357,7 @@ export const usersControllerUpdateRole = (
 ) => {
 
 
-      return customAxios<void>(
+      return httpRequest<UserResponseDto>(
       {url: `/api/v1/users/${id}/role`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: updateRoleDto, signal
@@ -417,7 +420,7 @@ export const usersControllerDeactivate = (
 ) => {
 
 
-      return customAxios<void>(
+      return httpRequest<UserResponseDto>(
       {url: `/api/v1/users/${id}/deactivate`, method: 'PATCH', signal
     },
       );

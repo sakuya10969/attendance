@@ -26,10 +26,12 @@ import type {
 
 import type {
   ClosingControllerFindAllParams,
+  ClosingRecordListResponseDto,
+  ClosingRecordResponseDto,
   CreateClosingDto
 } from '../../model';
 
-import { customAxios } from '../../http-client';
+import { httpRequest } from '../../http-client';
 
 
 
@@ -43,7 +45,7 @@ export const closingControllerClose = (
 ) => {
 
 
-      return customAxios<void>(
+      return httpRequest<ClosingRecordResponseDto>(
       {url: `/api/v1/admin/closing`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createClosingDto, signal
@@ -101,12 +103,12 @@ export const useClosingControllerClose = <TError = unknown,
  * @summary 締め履歴一覧
  */
 export const closingControllerFindAll = (
-    params: ClosingControllerFindAllParams,
+    params?: ClosingControllerFindAllParams,
  signal?: AbortSignal
 ) => {
 
 
-      return customAxios<void>(
+      return httpRequest<ClosingRecordListResponseDto>(
       {url: `/api/v1/admin/closing`, method: 'GET',
         params, signal
     },
@@ -123,7 +125,7 @@ export const getClosingControllerFindAllQueryKey = (params?: ClosingControllerFi
     }
 
 
-export const getClosingControllerFindAllQueryOptions = <TData = Awaited<ReturnType<typeof closingControllerFindAll>>, TError = unknown>(params: ClosingControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof closingControllerFindAll>>, TError, TData>>, }
+export const getClosingControllerFindAllQueryOptions = <TData = Awaited<ReturnType<typeof closingControllerFindAll>>, TError = unknown>(params?: ClosingControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof closingControllerFindAll>>, TError, TData>>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
@@ -146,7 +148,7 @@ export type ClosingControllerFindAllQueryError = unknown
 
 
 export function useClosingControllerFindAll<TData = Awaited<ReturnType<typeof closingControllerFindAll>>, TError = unknown>(
- params: ClosingControllerFindAllParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof closingControllerFindAll>>, TError, TData>> & Pick<
+ params: undefined |  ClosingControllerFindAllParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof closingControllerFindAll>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof closingControllerFindAll>>,
           TError,
@@ -156,7 +158,7 @@ export function useClosingControllerFindAll<TData = Awaited<ReturnType<typeof cl
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useClosingControllerFindAll<TData = Awaited<ReturnType<typeof closingControllerFindAll>>, TError = unknown>(
- params: ClosingControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof closingControllerFindAll>>, TError, TData>> & Pick<
+ params?: ClosingControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof closingControllerFindAll>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof closingControllerFindAll>>,
           TError,
@@ -166,7 +168,7 @@ export function useClosingControllerFindAll<TData = Awaited<ReturnType<typeof cl
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useClosingControllerFindAll<TData = Awaited<ReturnType<typeof closingControllerFindAll>>, TError = unknown>(
- params: ClosingControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof closingControllerFindAll>>, TError, TData>>, }
+ params?: ClosingControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof closingControllerFindAll>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
@@ -174,7 +176,7 @@ export function useClosingControllerFindAll<TData = Awaited<ReturnType<typeof cl
  */
 
 export function useClosingControllerFindAll<TData = Awaited<ReturnType<typeof closingControllerFindAll>>, TError = unknown>(
- params: ClosingControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof closingControllerFindAll>>, TError, TData>>, }
+ params?: ClosingControllerFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof closingControllerFindAll>>, TError, TData>>, }
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
@@ -197,7 +199,7 @@ export const closingControllerReopen = (
 ) => {
 
 
-      return customAxios<void>(
+      return httpRequest<ClosingRecordResponseDto>(
       {url: `/api/v1/admin/closing/${id}/reopen`, method: 'POST', signal
     },
       );

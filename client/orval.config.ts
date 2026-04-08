@@ -13,7 +13,7 @@ export default defineConfig({
       override: {
         mutator: {
           path: './app/shared/api/http-client.ts',
-          name: 'customAxios',
+          name: 'httpRequest',
         },
       },
     },

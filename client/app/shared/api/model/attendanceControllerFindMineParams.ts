@@ -7,8 +7,8 @@
  */
 
 export type AttendanceControllerFindMineParams = {
-year: number;
-month: number;
-page: number;
-limit: number;
+year?: number;
+month?: number;
+page?: number;
+limit?: number;
 };

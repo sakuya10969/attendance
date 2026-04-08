@@ -7,10 +7,10 @@
  */
 
 export type AuditLogsControllerFindAllTenantParams = {
-action: string;
-actor_id: string;
-from: string;
-to: string;
-page: number;
-limit: number;
+action?: string;
+actor_id?: string;
+from?: string;
+to?: string;
+page?: number;
+limit?: number;
 };

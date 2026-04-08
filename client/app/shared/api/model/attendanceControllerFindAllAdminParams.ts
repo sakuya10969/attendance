@@ -7,9 +7,9 @@
  */
 
 export type AttendanceControllerFindAllAdminParams = {
-employee_id: string;
-year: number;
-month: number;
-page: number;
-limit: number;
+employee_id?: string;
+year?: number;
+month?: number;
+page?: number;
+limit?: number;
 };

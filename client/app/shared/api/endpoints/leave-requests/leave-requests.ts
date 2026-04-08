@@ -25,12 +25,16 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  ActionMessageResponseDto,
   CreateLeaveRequestDto,
+  LeaveRequestAdminListResponseDto,
+  LeaveRequestListResponseDto,
+  LeaveRequestResponseDto,
   LeaveRequestsControllerFindAllAdminParams,
   LeaveRequestsControllerFindMineParams
 } from '../../model';
 
-import { customAxios } from '../../http-client';
+import { httpRequest } from '../../http-client';
 
 
 
@@ -44,7 +48,7 @@ export const leaveRequestsControllerCreate = (
 ) => {
 
 
-      return customAxios<void>(
+      return httpRequest<LeaveRequestResponseDto>(
       {url: `/api/v1/leave-requests`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createLeaveRequestDto, signal
@@ -102,12 +106,12 @@ export const useLeaveRequestsControllerCreate = <TError = unknown,
  * @summary 自身の休暇申請一覧
  */
 export const leaveRequestsControllerFindMine = (
-    params: LeaveRequestsControllerFindMineParams,
+    params?: LeaveRequestsControllerFindMineParams,
  signal?: AbortSignal
 ) => {
 
 
-      return customAxios<void>(
+      return httpRequest<LeaveRequestListResponseDto>(
       {url: `/api/v1/leave-requests`, method: 'GET',
         params, signal
     },
@@ -124,7 +128,7 @@ export const getLeaveRequestsControllerFindMineQueryKey = (params?: LeaveRequest
     }
 
 
-export const getLeaveRequestsControllerFindMineQueryOptions = <TData = Awaited<ReturnType<typeof leaveRequestsControllerFindMine>>, TError = unknown>(params: LeaveRequestsControllerFindMineParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof leaveRequestsControllerFindMine>>, TError, TData>>, }
+export const getLeaveRequestsControllerFindMineQueryOptions = <TData = Awaited<ReturnType<typeof leaveRequestsControllerFindMine>>, TError = unknown>(params?: LeaveRequestsControllerFindMineParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof leaveRequestsControllerFindMine>>, TError, TData>>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
@@ -147,7 +151,7 @@ export type LeaveRequestsControllerFindMineQueryError = unknown
 
 
 export function useLeaveRequestsControllerFindMine<TData = Awaited<ReturnType<typeof leaveRequestsControllerFindMine>>, TError = unknown>(
- params: LeaveRequestsControllerFindMineParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof leaveRequestsControllerFindMine>>, TError, TData>> & Pick<
+ params: undefined |  LeaveRequestsControllerFindMineParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof leaveRequestsControllerFindMine>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof leaveRequestsControllerFindMine>>,
           TError,
@@ -157,7 +161,7 @@ export function useLeaveRequestsControllerFindMine<TData = Awaited<ReturnType<ty
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useLeaveRequestsControllerFindMine<TData = Awaited<ReturnType<typeof leaveRequestsControllerFindMine>>, TError = unknown>(
- params: LeaveRequestsControllerFindMineParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof leaveRequestsControllerFindMine>>, TError, TData>> & Pick<
+ params?: LeaveRequestsControllerFindMineParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof leaveRequestsControllerFindMine>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof leaveRequestsControllerFindMine>>,
           TError,
@@ -167,7 +171,7 @@ export function useLeaveRequestsControllerFindMine<TData = Awaited<ReturnType<ty
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useLeaveRequestsControllerFindMine<TData = Awaited<ReturnType<typeof leaveRequestsControllerFindMine>>, TError = unknown>(
- params: LeaveRequestsControllerFindMineParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof leaveRequestsControllerFindMine>>, TError, TData>>, }
+ params?: LeaveRequestsControllerFindMineParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof leaveRequestsControllerFindMine>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
@@ -175,7 +179,7 @@ export function useLeaveRequestsControllerFindMine<TData = Awaited<ReturnType<ty
  */
 
 export function useLeaveRequestsControllerFindMine<TData = Awaited<ReturnType<typeof leaveRequestsControllerFindMine>>, TError = unknown>(
- params: LeaveRequestsControllerFindMineParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof leaveRequestsControllerFindMine>>, TError, TData>>, }
+ params?: LeaveRequestsControllerFindMineParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof leaveRequestsControllerFindMine>>, TError, TData>>, }
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
@@ -193,12 +197,12 @@ export function useLeaveRequestsControllerFindMine<TData = Awaited<ReturnType<ty
  * @summary テナント内申請一覧（tenant_admin）
  */
 export const leaveRequestsControllerFindAllAdmin = (
-    params: LeaveRequestsControllerFindAllAdminParams,
+    params?: LeaveRequestsControllerFindAllAdminParams,
  signal?: AbortSignal
 ) => {
 
 
-      return customAxios<void>(
+      return httpRequest<LeaveRequestAdminListResponseDto>(
       {url: `/api/v1/admin/leave-requests`, method: 'GET',
         params, signal
     },
@@ -215,7 +219,7 @@ export const getLeaveRequestsControllerFindAllAdminQueryKey = (params?: LeaveReq
     }
 
 
-export const getLeaveRequestsControllerFindAllAdminQueryOptions = <TData = Awaited<ReturnType<typeof leaveRequestsControllerFindAllAdmin>>, TError = unknown>(params: LeaveRequestsControllerFindAllAdminParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof leaveRequestsControllerFindAllAdmin>>, TError, TData>>, }
+export const getLeaveRequestsControllerFindAllAdminQueryOptions = <TData = Awaited<ReturnType<typeof leaveRequestsControllerFindAllAdmin>>, TError = unknown>(params?: LeaveRequestsControllerFindAllAdminParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof leaveRequestsControllerFindAllAdmin>>, TError, TData>>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
@@ -238,7 +242,7 @@ export type LeaveRequestsControllerFindAllAdminQueryError = unknown
 
 
 export function useLeaveRequestsControllerFindAllAdmin<TData = Awaited<ReturnType<typeof leaveRequestsControllerFindAllAdmin>>, TError = unknown>(
- params: LeaveRequestsControllerFindAllAdminParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof leaveRequestsControllerFindAllAdmin>>, TError, TData>> & Pick<
+ params: undefined |  LeaveRequestsControllerFindAllAdminParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof leaveRequestsControllerFindAllAdmin>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof leaveRequestsControllerFindAllAdmin>>,
           TError,
@@ -248,7 +252,7 @@ export function useLeaveRequestsControllerFindAllAdmin<TData = Awaited<ReturnTyp
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useLeaveRequestsControllerFindAllAdmin<TData = Awaited<ReturnType<typeof leaveRequestsControllerFindAllAdmin>>, TError = unknown>(
- params: LeaveRequestsControllerFindAllAdminParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof leaveRequestsControllerFindAllAdmin>>, TError, TData>> & Pick<
+ params?: LeaveRequestsControllerFindAllAdminParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof leaveRequestsControllerFindAllAdmin>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof leaveRequestsControllerFindAllAdmin>>,
           TError,
@@ -258,7 +262,7 @@ export function useLeaveRequestsControllerFindAllAdmin<TData = Awaited<ReturnTyp
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useLeaveRequestsControllerFindAllAdmin<TData = Awaited<ReturnType<typeof leaveRequestsControllerFindAllAdmin>>, TError = unknown>(
- params: LeaveRequestsControllerFindAllAdminParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof leaveRequestsControllerFindAllAdmin>>, TError, TData>>, }
+ params?: LeaveRequestsControllerFindAllAdminParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof leaveRequestsControllerFindAllAdmin>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
@@ -266,7 +270,7 @@ export function useLeaveRequestsControllerFindAllAdmin<TData = Awaited<ReturnTyp
  */
 
 export function useLeaveRequestsControllerFindAllAdmin<TData = Awaited<ReturnType<typeof leaveRequestsControllerFindAllAdmin>>, TError = unknown>(
- params: LeaveRequestsControllerFindAllAdminParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof leaveRequestsControllerFindAllAdmin>>, TError, TData>>, }
+ params?: LeaveRequestsControllerFindAllAdminParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof leaveRequestsControllerFindAllAdmin>>, TError, TData>>, }
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
@@ -289,7 +293,7 @@ export const leaveRequestsControllerApprove = (
 ) => {
 
 
-      return customAxios<void>(
+      return httpRequest<ActionMessageResponseDto>(
       {url: `/api/v1/admin/leave-requests/${id}/approve`, method: 'POST', signal
     },
       );
@@ -350,7 +354,7 @@ export const leaveRequestsControllerReject = (
 ) => {
 
 
-      return customAxios<void>(
+      return httpRequest<ActionMessageResponseDto>(
       {url: `/api/v1/admin/leave-requests/${id}/reject`, method: 'POST', signal
     },
       );
