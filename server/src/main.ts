@@ -1,4 +1,6 @@
 import 'dotenv/config'
+import { writeFileSync } from 'fs'
+import { resolve } from 'path'
 import { NestFactory } from '@nestjs/core'
 import { ValidationPipe } from '@nestjs/common'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
@@ -32,6 +34,11 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config)
   SwaggerModule.setup('api/docs', app, document)
+
+  // Swagger JSONをファイルに書き出し（サーバー起動のたびに最新化）
+  const swaggerOutputPath = resolve(__dirname, '..', 'swagger.json')
+  writeFileSync(swaggerOutputPath, JSON.stringify(document, null, 2), 'utf-8')
+  console.log(`Swagger JSON written to ${swaggerOutputPath}`)
 
   const port = process.env.PORT ?? 3000
   await app.listen(port)
