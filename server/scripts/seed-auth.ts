@@ -2,21 +2,7 @@ import 'dotenv/config'
 import { NestFactory } from '@nestjs/core'
 import { AppModule } from '../src/app.module'
 import { FirebaseService } from '../src/firebase/firebase.service'
-
-const seedUsers = [
-  {
-    email: 'dev-admin@example.com',
-    displayName: 'Dev Admin',
-  },
-  {
-    email: 'manager@example.com',
-    displayName: 'Manager User',
-  },
-  {
-    email: 'member1@example.com',
-    displayName: 'Member One',
-  },
-]
+import { authSeedUsers } from './data/dev-seed-data'
 
 async function main() {
   const password = process.env.DEV_AUTH_SEED_PASSWORD
@@ -34,7 +20,7 @@ async function main() {
   try {
     firebase.assertDevelopmentSeedAllowed('auth')
 
-    for (const seedUser of seedUsers) {
+    for (const seedUser of authSeedUsers) {
       const user = await firebase.createOrGetUser(
         seedUser.email,
         seedUser.displayName,

@@ -3,47 +3,14 @@ import { NestFactory } from '@nestjs/core'
 import { AppModule } from '../src/app.module'
 import { FirebaseService } from '../src/firebase/firebase.service'
 import { PrismaService } from '../src/prisma/prisma.service'
+import { appSeedUsers, tenantSeed } from './data/dev-seed-data'
+import {
+  memberScenarios,
+  type MemberAttendanceScenario,
+  type MemberScenario,
+} from './data/dev-member-scenarios'
 
 const DAY_MS = 24 * 60 * 60 * 1000
-
-const seedUsers = [
-  {
-    email: 'dev-admin@example.com',
-    name: 'Dev Admin',
-    role: 'tenant_admin',
-    employeeNumber: 'A-001',
-    departmentName: 'Operations',
-  },
-  {
-    email: 'manager@example.com',
-    name: 'Manager User',
-    role: 'tenant_admin',
-    employeeNumber: 'A-002',
-    departmentName: 'Operations',
-  },
-  {
-    email: 'member1@example.com',
-    name: 'Member One',
-    role: 'tenant_user',
-    employeeNumber: 'A-003',
-    departmentName: 'Storefront',
-  },
-] as const
-
-async function findOrCreateDepartment(
-  prisma: PrismaService,
-  tenantId: string,
-  name: string,
-) {
-  return (
-    (await prisma.department.findFirst({
-      where: { tenantId, name },
-    })) ??
-    prisma.department.create({
-      data: { tenantId, name },
-    })
-  )
-}
 
 function atUtc(date: Date, hours: number, minutes = 0) {
   return new Date(
@@ -60,7 +27,417 @@ function atUtc(date: Date, hours: number, minutes = 0) {
 }
 
 function asDateOnly(date: Date) {
-  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()))
+  return new Date(
+    Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()),
+  )
+}
+
+function offsetDate(baseDate: Date, offsetDays: number) {
+  return asDateOnly(new Date(baseDate.getTime() + offsetDays * DAY_MS))
+}
+
+async function findOrCreateDepartment(
+  prisma: PrismaService,
+  tenantId: string,
+  name: string,
+) {
+  return (
+    (await prisma.department.findFirst({
+      where: { tenantId, name },
+    })) ??
+    prisma.department.create({
+      data: { tenantId, name },
+    })
+  )
+}
+
+async function seedUsersAndEmployees(
+  prisma: PrismaService,
+  firebase: FirebaseService,
+  tenantId: string,
+) {
+  const firebaseUsers = await Promise.all(
+    appSeedUsers.map(async (seedUser) => {
+      const authUser = await firebase.getUserByEmail(seedUser.email)
+      return [seedUser.email, authUser.uid] as const
+    }),
+  )
+  const uidByEmail = new Map(firebaseUsers)
+
+  const departments = await Promise.all(
+    tenantSeed.departments.map((name) =>
+      findOrCreateDepartment(prisma, tenantId, name),
+    ),
+  )
+  const departmentIdByName = new Map(
+    departments.map((department) => [department.name, department.id]),
+  )
+
+  const standardWorkPattern =
+    (await prisma.workPattern.findFirst({
+      where: { tenantId, name: tenantSeed.workPattern.name },
+    })) ??
+    (await prisma.workPattern.create({
+      data: {
+        tenantId,
+        name: tenantSeed.workPattern.name,
+        startTime: tenantSeed.workPattern.startTime,
+        endTime: tenantSeed.workPattern.endTime,
+        breakMinutes: tenantSeed.workPattern.breakMinutes,
+      },
+    }))
+
+  const createdUsers = new Map<string, string>()
+  const createdEmployees = new Map<string, string>()
+
+  for (const seedUser of appSeedUsers) {
+    const firebaseUid = uidByEmail.get(seedUser.email)
+
+    if (!firebaseUid) {
+      throw new Error(`Missing Firebase UID for ${seedUser.email}. Run seed-auth first.`)
+    }
+
+    const user = await prisma.user.upsert({
+      where: { firebaseUid },
+      update: {
+        email: seedUser.email,
+        name: seedUser.name,
+        role: seedUser.role,
+        tenantId,
+        isActive: true,
+      },
+      create: {
+        firebaseUid,
+        email: seedUser.email,
+        name: seedUser.name,
+        role: seedUser.role,
+        tenantId,
+        isActive: true,
+      },
+    })
+    createdUsers.set(seedUser.email, user.id)
+
+    const employee = await prisma.employee.upsert({
+      where: {
+        tenantId_employeeNumber: {
+          tenantId,
+          employeeNumber: seedUser.employeeNumber,
+        },
+      },
+      update: {
+        userId: user.id,
+        name: seedUser.name,
+        departmentId: departmentIdByName.get(seedUser.departmentName) ?? null,
+        workPatternId: standardWorkPattern.id,
+        joinedAt: new Date('2025-04-01T00:00:00.000Z'),
+      },
+      create: {
+        tenantId,
+        userId: user.id,
+        employeeNumber: seedUser.employeeNumber,
+        name: seedUser.name,
+        departmentId: departmentIdByName.get(seedUser.departmentName) ?? null,
+        workPatternId: standardWorkPattern.id,
+        joinedAt: new Date('2025-04-01T00:00:00.000Z'),
+      },
+    })
+    createdEmployees.set(seedUser.email, employee.id)
+  }
+
+  return {
+    createdUsers,
+    createdEmployees,
+  }
+}
+
+async function upsertAttendanceScenario(
+  prisma: PrismaService,
+  tenantId: string,
+  employeeId: string,
+  baseDate: Date,
+  scenario: MemberScenario,
+) {
+  if (!('attendance' in scenario)) {
+    return null
+  }
+
+  const attendanceScenario: MemberAttendanceScenario = scenario
+  const attendanceDate = offsetDate(baseDate, -scenario.daysAgo)
+  const attendance = await prisma.attendance.upsert({
+    where: {
+      tenantId_employeeId_date: {
+        tenantId,
+        employeeId,
+        date: attendanceDate,
+      },
+    },
+    update: {
+      clockIn:
+        attendanceScenario.attendance.clockInHour === undefined
+          ? null
+          : atUtc(
+              attendanceDate,
+              attendanceScenario.attendance.clockInHour,
+              attendanceScenario.attendance.clockInMinute ?? 0,
+            ),
+      clockOut:
+        attendanceScenario.attendance.clockOutHour === undefined
+          ? null
+          : atUtc(
+              attendanceDate,
+              attendanceScenario.attendance.clockOutHour,
+              attendanceScenario.attendance.clockOutMinute ?? 0,
+            ),
+      status: attendanceScenario.attendance.status,
+      isOvernight: false,
+    },
+    create: {
+      tenantId,
+      employeeId,
+      date: attendanceDate,
+      clockIn:
+        attendanceScenario.attendance.clockInHour === undefined
+          ? null
+          : atUtc(
+              attendanceDate,
+              attendanceScenario.attendance.clockInHour,
+              attendanceScenario.attendance.clockInMinute ?? 0,
+            ),
+      clockOut:
+        attendanceScenario.attendance.clockOutHour === undefined
+          ? null
+          : atUtc(
+              attendanceDate,
+              attendanceScenario.attendance.clockOutHour,
+              attendanceScenario.attendance.clockOutMinute ?? 0,
+            ),
+      status: attendanceScenario.attendance.status,
+      isOvernight: false,
+    },
+  })
+
+  const breakWindow = attendanceScenario.attendance.breakWindow
+  if (!breakWindow) {
+    return attendance
+  }
+
+  const breakStart = atUtc(
+    attendanceDate,
+    breakWindow.startHour,
+    breakWindow.startMinute ?? 0,
+  )
+  const existingBreak = await prisma.breakRecord.findFirst({
+    where: {
+      attendanceId: attendance.id,
+      startTime: breakStart,
+    },
+  })
+
+  const breakEnd =
+    breakWindow.endHour === undefined
+      ? null
+      : atUtc(attendanceDate, breakWindow.endHour, breakWindow.endMinute ?? 0)
+
+  if (existingBreak) {
+    await prisma.breakRecord.update({
+      where: { id: existingBreak.id },
+      data: { endTime: breakEnd },
+    })
+  } else {
+    await prisma.breakRecord.create({
+      data: {
+        attendanceId: attendance.id,
+        startTime: breakStart,
+        endTime: breakEnd,
+      },
+    })
+  }
+
+  return attendance
+}
+
+async function upsertClockCorrectionScenario(
+  prisma: PrismaService,
+  tenantId: string,
+  employeeId: string,
+  attendanceId: string,
+  attendanceClockIn: Date | null,
+  attendanceClockOut: Date | null,
+  date: Date,
+  scenario: MemberScenario,
+) {
+  if (!('clockCorrection' in scenario) || !scenario.clockCorrection) {
+    return
+  }
+
+  const existingCorrection = await prisma.clockCorrection.findFirst({
+    where: {
+      tenantId,
+      attendanceId,
+      requestedBy: employeeId,
+    },
+  })
+
+  const payload = {
+    originalClockIn: attendanceClockIn,
+    originalClockOut: attendanceClockOut,
+    correctedClockIn: atUtc(
+      date,
+      scenario.clockCorrection.correctedClockInHour,
+      scenario.clockCorrection.correctedClockInMinute ?? 0,
+    ),
+    correctedClockOut: atUtc(
+      date,
+      scenario.clockCorrection.correctedClockOutHour,
+      scenario.clockCorrection.correctedClockOutMinute ?? 0,
+    ),
+    reason: scenario.clockCorrection.reason,
+    status: scenario.clockCorrection.status,
+    reviewedBy: null,
+    reviewedAt: null,
+  }
+
+  if (existingCorrection) {
+    await prisma.clockCorrection.update({
+      where: { id: existingCorrection.id },
+      data: payload,
+    })
+    return
+  }
+
+  await prisma.clockCorrection.create({
+    data: {
+      tenantId,
+      attendanceId,
+      requestedBy: employeeId,
+      ...payload,
+    },
+  })
+}
+
+async function upsertLeaveRequestScenario(
+  prisma: PrismaService,
+  tenantId: string,
+  employeeId: string,
+  reviewerUserId: string,
+  baseDate: Date,
+  scenario: MemberScenario,
+) {
+  if (!('leaveRequest' in scenario) || !scenario.leaveRequest) {
+    return
+  }
+
+  const startDate = offsetDate(baseDate, scenario.leaveRequest.startOffsetDays)
+  const endDate = offsetDate(baseDate, scenario.leaveRequest.endOffsetDays)
+  const existingLeaveRequest = await prisma.leaveRequest.findFirst({
+    where: {
+      tenantId,
+      employeeId,
+      startDate,
+      endDate,
+    },
+  })
+
+  const isReviewed = scenario.leaveRequest.status !== 'pending'
+  const payload = {
+    leaveType: scenario.leaveRequest.leaveType,
+    reason: scenario.leaveRequest.reason,
+    status: scenario.leaveRequest.status,
+    reviewedBy: isReviewed ? reviewerUserId : null,
+    reviewedAt: isReviewed ? new Date() : null,
+  }
+
+  if (existingLeaveRequest) {
+    await prisma.leaveRequest.update({
+      where: { id: existingLeaveRequest.id },
+      data: payload,
+    })
+    return
+  }
+
+  await prisma.leaveRequest.create({
+    data: {
+      tenantId,
+      employeeId,
+      startDate,
+      endDate,
+      ...payload,
+    },
+  })
+}
+
+async function seedMemberScenarios(
+  prisma: PrismaService,
+  tenantId: string,
+  createdUsers: Map<string, string>,
+  createdEmployees: Map<string, string>,
+) {
+  const today = asDateOnly(new Date())
+  const managerUserId = createdUsers.get('manager@example.com')
+
+  if (!managerUserId) {
+    throw new Error('Manager user is required for review seeds.')
+  }
+
+  for (const scenario of memberScenarios) {
+    const employeeId = createdEmployees.get(scenario.email)
+
+    if (!employeeId) {
+      throw new Error(`Missing employee for ${scenario.email}.`)
+    }
+
+    const attendance = await upsertAttendanceScenario(
+      prisma,
+      tenantId,
+      employeeId,
+      today,
+      scenario,
+    )
+
+    if (attendance && 'clockCorrection' in scenario && scenario.clockCorrection) {
+      const attendanceDate = offsetDate(today, -scenario.daysAgo)
+      await upsertClockCorrectionScenario(
+        prisma,
+        tenantId,
+        employeeId,
+        attendance.id,
+        attendance.clockIn,
+        attendance.clockOut,
+        attendanceDate,
+        scenario,
+      )
+    }
+
+    await upsertLeaveRequestScenario(
+      prisma,
+      tenantId,
+      employeeId,
+      managerUserId,
+      today,
+      scenario,
+    )
+  }
+
+  await prisma.closingRecord.upsert({
+    where: {
+      tenantId_yearMonth: {
+        tenantId,
+        yearMonth: `${today.getUTCFullYear()}-${String(today.getUTCMonth() + 1).padStart(2, '0')}`,
+      },
+    },
+    update: {
+      closedBy: managerUserId,
+      closedAt: atUtc(today, 12, 0),
+      status: 'reopened',
+    },
+    create: {
+      tenantId,
+      yearMonth: `${today.getUTCFullYear()}-${String(today.getUTCMonth() + 1).padStart(2, '0')}`,
+      closedBy: managerUserId,
+      closedAt: atUtc(today, 12, 0),
+      status: 'reopened',
+    },
+  })
 }
 
 async function main() {
@@ -74,343 +451,24 @@ async function main() {
   try {
     firebase.assertDevelopmentSeedAllowed('app')
 
-    const firebaseUsers = await Promise.all(
-      seedUsers.map(async (seedUser) => {
-        const authUser = await firebase.getUserByEmail(seedUser.email)
-        return [seedUser.email, authUser.uid] as const
-      }),
-    )
-    const uidByEmail = new Map(firebaseUsers)
-
-    const tenantName = 'Development Tenant'
     const tenant =
       (await prisma.tenant.findFirst({
-        where: { name: tenantName },
+        where: { name: tenantSeed.name },
       })) ??
       (await prisma.tenant.create({
-        data: { name: tenantName, status: 'active' },
+        data: { name: tenantSeed.name, status: 'active' },
       }))
 
-    const operationsDepartment = await findOrCreateDepartment(
+    const { createdUsers, createdEmployees } = await seedUsersAndEmployees(
       prisma,
+      firebase,
       tenant.id,
-      'Operations',
-    )
-    const storefrontDepartment = await findOrCreateDepartment(
-      prisma,
-      tenant.id,
-      'Storefront',
     )
 
-    const standardWorkPattern =
-      (await prisma.workPattern.findFirst({
-        where: { tenantId: tenant.id, name: 'Standard Day' },
-      })) ??
-      (await prisma.workPattern.create({
-        data: {
-          tenantId: tenant.id,
-          name: 'Standard Day',
-          startTime: '09:00',
-          endTime: '18:00',
-          breakMinutes: 60,
-        },
-      }))
-
-    const departmentIdByName = new Map<string, string>([
-      [operationsDepartment.name, operationsDepartment.id],
-      [storefrontDepartment.name, storefrontDepartment.id],
-    ])
-
-    const createdUsers = new Map<string, string>()
-    const createdEmployees = new Map<string, string>()
-
-    for (const seedUser of seedUsers) {
-      const firebaseUid = uidByEmail.get(seedUser.email)
-
-      if (!firebaseUid) {
-        throw new Error(`Missing Firebase UID for ${seedUser.email}. Run seed-auth first.`)
-      }
-
-      const user = await prisma.user.upsert({
-        where: { firebaseUid },
-        update: {
-          email: seedUser.email,
-          name: seedUser.name,
-          role: seedUser.role,
-          tenantId: tenant.id,
-          isActive: true,
-        },
-        create: {
-          firebaseUid,
-          email: seedUser.email,
-          name: seedUser.name,
-          role: seedUser.role,
-          tenantId: tenant.id,
-          isActive: true,
-        },
-      })
-      createdUsers.set(seedUser.email, user.id)
-
-      const employee = await prisma.employee.upsert({
-        where: {
-          tenantId_employeeNumber: {
-            tenantId: tenant.id,
-            employeeNumber: seedUser.employeeNumber,
-          },
-        },
-        update: {
-          userId: user.id,
-          name: seedUser.name,
-          departmentId: departmentIdByName.get(seedUser.departmentName) ?? null,
-          workPatternId: standardWorkPattern.id,
-          joinedAt: new Date('2025-04-01T00:00:00.000Z'),
-        },
-        create: {
-          tenantId: tenant.id,
-          userId: user.id,
-          employeeNumber: seedUser.employeeNumber,
-          name: seedUser.name,
-          departmentId: departmentIdByName.get(seedUser.departmentName) ?? null,
-          workPatternId: standardWorkPattern.id,
-          joinedAt: new Date('2025-04-01T00:00:00.000Z'),
-        },
-      })
-      createdEmployees.set(seedUser.email, employee.id)
-    }
-
-    const now = new Date()
-    const today = asDateOnly(now)
-    const twoDaysAgo = asDateOnly(new Date(today.getTime() - DAY_MS * 2))
-    const threeDaysAgo = asDateOnly(new Date(today.getTime() - DAY_MS * 3))
-    const fourDaysAgo = asDateOnly(new Date(today.getTime() - DAY_MS * 4))
-    const fiveDaysAgo = asDateOnly(new Date(today.getTime() - DAY_MS * 5))
-    const nextWeek = asDateOnly(new Date(today.getTime() + DAY_MS * 7))
-    const nextWeekPlusOne = asDateOnly(new Date(today.getTime() + DAY_MS * 8))
-
-    const memberEmployeeId = createdEmployees.get('member1@example.com')
-    const managerUserId = createdUsers.get('manager@example.com')
-
-    if (!memberEmployeeId || !managerUserId) {
-      throw new Error('Seed user linkage is incomplete.')
-    }
-
-    const completedAttendance = await prisma.attendance.upsert({
-      where: {
-        tenantId_employeeId_date: {
-          tenantId: tenant.id,
-          employeeId: memberEmployeeId,
-          date: twoDaysAgo,
-        },
-      },
-      update: {
-        clockIn: atUtc(twoDaysAgo, 0, 0),
-        clockOut: atUtc(twoDaysAgo, 9, 30),
-        status: 'completed',
-        isOvernight: false,
-      },
-      create: {
-        tenantId: tenant.id,
-        employeeId: memberEmployeeId,
-        date: twoDaysAgo,
-        clockIn: atUtc(twoDaysAgo, 0, 0),
-        clockOut: atUtc(twoDaysAgo, 9, 30),
-        status: 'completed',
-        isOvernight: false,
-      },
-    })
-
-    const existingBreak = await prisma.breakRecord.findFirst({
-      where: {
-        attendanceId: completedAttendance.id,
-        startTime: atUtc(twoDaysAgo, 4, 0),
-      },
-    })
-
-    if (existingBreak) {
-      await prisma.breakRecord.update({
-        where: { id: existingBreak.id },
-        data: { endTime: atUtc(twoDaysAgo, 5, 0) },
-      })
-    } else {
-      await prisma.breakRecord.create({
-        data: {
-          attendanceId: completedAttendance.id,
-          startTime: atUtc(twoDaysAgo, 4, 0),
-          endTime: atUtc(twoDaysAgo, 5, 0),
-        },
-      })
-    }
-
-    await prisma.attendance.upsert({
-      where: {
-        tenantId_employeeId_date: {
-          tenantId: tenant.id,
-          employeeId: memberEmployeeId,
-          date: threeDaysAgo,
-        },
-      },
-      update: {
-        clockIn: atUtc(threeDaysAgo, 0, 15),
-        clockOut: atUtc(threeDaysAgo, 8, 45),
-        status: 'completed',
-        isOvernight: false,
-      },
-      create: {
-        tenantId: tenant.id,
-        employeeId: memberEmployeeId,
-        date: threeDaysAgo,
-        clockIn: atUtc(threeDaysAgo, 0, 15),
-        clockOut: atUtc(threeDaysAgo, 8, 45),
-        status: 'completed',
-        isOvernight: false,
-      },
-    })
-
-    const correctionAttendance = await prisma.attendance.upsert({
-      where: {
-        tenantId_employeeId_date: {
-          tenantId: tenant.id,
-          employeeId: memberEmployeeId,
-          date: fourDaysAgo,
-        },
-      },
-      update: {
-        clockIn: atUtc(fourDaysAgo, 0, 30),
-        clockOut: atUtc(fourDaysAgo, 8, 0),
-        status: 'completed',
-        isOvernight: false,
-      },
-      create: {
-        tenantId: tenant.id,
-        employeeId: memberEmployeeId,
-        date: fourDaysAgo,
-        clockIn: atUtc(fourDaysAgo, 0, 30),
-        clockOut: atUtc(fourDaysAgo, 8, 0),
-        status: 'completed',
-        isOvernight: false,
-      },
-    })
-
-    const holidayAttendance = await prisma.attendance.upsert({
-      where: {
-        tenantId_employeeId_date: {
-          tenantId: tenant.id,
-          employeeId: memberEmployeeId,
-          date: fiveDaysAgo,
-        },
-      },
-      update: {
-        clockIn: null,
-        clockOut: null,
-        status: 'holiday',
-        isOvernight: false,
-      },
-      create: {
-        tenantId: tenant.id,
-        employeeId: memberEmployeeId,
-        date: fiveDaysAgo,
-        clockIn: null,
-        clockOut: null,
-        status: 'holiday',
-        isOvernight: false,
-      },
-    })
-
-    const existingCorrection = await prisma.clockCorrection.findFirst({
-      where: {
-        tenantId: tenant.id,
-        attendanceId: correctionAttendance.id,
-        requestedBy: memberEmployeeId,
-      },
-    })
-
-    if (existingCorrection) {
-      await prisma.clockCorrection.update({
-        where: { id: existingCorrection.id },
-        data: {
-          originalClockIn: correctionAttendance.clockIn,
-          originalClockOut: correctionAttendance.clockOut,
-          correctedClockIn: atUtc(fourDaysAgo, 0, 0),
-          correctedClockOut: atUtc(fourDaysAgo, 8, 30),
-          reason: 'Seeded correction request for admin review.',
-          status: 'pending',
-          reviewedBy: null,
-          reviewedAt: null,
-        },
-      })
-    } else {
-      await prisma.clockCorrection.create({
-        data: {
-          tenantId: tenant.id,
-          attendanceId: correctionAttendance.id,
-          requestedBy: memberEmployeeId,
-          originalClockIn: correctionAttendance.clockIn,
-          originalClockOut: correctionAttendance.clockOut,
-          correctedClockIn: atUtc(fourDaysAgo, 0, 0),
-          correctedClockOut: atUtc(fourDaysAgo, 8, 30),
-          reason: 'Seeded correction request for admin review.',
-          status: 'pending',
-        },
-      })
-    }
-
-    const existingLeaveRequest = await prisma.leaveRequest.findFirst({
-      where: {
-        tenantId: tenant.id,
-        employeeId: memberEmployeeId,
-        startDate: nextWeek,
-        endDate: nextWeekPlusOne,
-      },
-    })
-
-    if (existingLeaveRequest) {
-      await prisma.leaveRequest.update({
-        where: { id: existingLeaveRequest.id },
-        data: {
-          leaveType: 'paid',
-          reason: 'Seeded paid leave request.',
-          status: 'pending',
-          reviewedBy: null,
-          reviewedAt: null,
-        },
-      })
-    } else {
-      await prisma.leaveRequest.create({
-        data: {
-          tenantId: tenant.id,
-          employeeId: memberEmployeeId,
-          leaveType: 'paid',
-          startDate: nextWeek,
-          endDate: nextWeekPlusOne,
-          reason: 'Seeded paid leave request.',
-          status: 'pending',
-        },
-      })
-    }
-
-    await prisma.closingRecord.upsert({
-      where: {
-        tenantId_yearMonth: {
-          tenantId: tenant.id,
-          yearMonth: `${today.getUTCFullYear()}-${String(today.getUTCMonth() + 1).padStart(2, '0')}`,
-        },
-      },
-      update: {
-        closedBy: managerUserId,
-        closedAt: atUtc(holidayAttendance.date, 12, 0),
-        status: 'reopened',
-      },
-      create: {
-        tenantId: tenant.id,
-        yearMonth: `${today.getUTCFullYear()}-${String(today.getUTCMonth() + 1).padStart(2, '0')}`,
-        closedBy: managerUserId,
-        closedAt: atUtc(holidayAttendance.date, 12, 0),
-        status: 'reopened',
-      },
-    })
+    await seedMemberScenarios(prisma, tenant.id, createdUsers, createdEmployees)
 
     console.log(`Seeded app data for tenant: ${tenant.name} (${tenant.id})`)
-    for (const seedUser of seedUsers) {
+    for (const seedUser of appSeedUsers) {
       console.log(`${seedUser.email} -> user + employee ready`)
     }
   } finally {
