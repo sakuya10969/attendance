@@ -4,10 +4,13 @@ import {
   Button,
   Card,
   Center,
+  Divider,
   Group,
   Loader,
+  PasswordInput,
   Stack,
   Text,
+  TextInput,
   ThemeIcon,
   Title,
 } from "@mantine/core";
@@ -19,15 +22,24 @@ import {
 import { useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router";
 
+import { isAuthEmulatorEnabled } from "~/lib/firebase";
 import { roleHomeMap } from "~/shared/session/model/role";
 import { useAuth } from "~/shared/session/model/use-auth";
 
 export function LoginPanel() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { appUser, isAuthenticated, isInitializing, signInWithGoogle } = useAuth();
+  const {
+    appUser,
+    isAuthenticated,
+    isInitializing,
+    signInWithGoogle,
+    signInWithPassword,
+  } = useAuth();
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [email, setEmail] = useState("member1@example.com");
+  const [password, setPassword] = useState("");
 
   if (isInitializing) {
     return (
@@ -58,6 +70,23 @@ export function LoginPanel() {
     }
   }
 
+  async function handlePasswordSignIn() {
+    setSubmitting(true);
+    setError(null);
+
+    try {
+      await signInWithPassword(email, password);
+      navigate(
+        typeof location.state?.from === "string" ? location.state.from : "/",
+        { replace: true },
+      );
+    } catch {
+      setError("メールアドレスまたはパスワードでのログインに失敗しました。");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
   return (
     <Center mih="100vh" px="md" bg="gray.0">
       <Card w="100%" maw={480} p="xl" radius="lg" withBorder>
@@ -73,7 +102,9 @@ export function LoginPanel() {
                 勤怠管理システム
               </Title>
               <Text c="dimmed">
-                Google アカウントでサインインして勤怠情報にアクセスします。
+                {isAuthEmulatorEnabled
+                  ? "開発環境では Firebase Auth Emulator を使ってメールアドレスでサインインします。"
+                  : "Google アカウントでサインインして勤怠情報にアクセスします。"}
               </Text>
             </Stack>
           </Stack>
@@ -84,15 +115,47 @@ export function LoginPanel() {
             </Alert>
           ) : null}
 
-          <Button
-            size="md"
-            leftSection={<IconBrandGoogle size={18} />}
-            loading={submitting}
-            loaderProps={{ type: "dots" }}
-            onClick={handleGoogleSignIn}
-          >
-            Google でログイン
-          </Button>
+          {isAuthEmulatorEnabled ? (
+            <Stack gap="md">
+              <Alert color="blue" title="開発用ログイン">
+                seed-auth で投入した Email/Password ユーザーでログインします。
+              </Alert>
+              <TextInput
+                label="メールアドレス"
+                placeholder="member1@example.com"
+                value={email}
+                onChange={(event) => setEmail(event.currentTarget.value)}
+              />
+              <PasswordInput
+                label="パスワード"
+                placeholder="開発用パスワード"
+                value={password}
+                onChange={(event) => setPassword(event.currentTarget.value)}
+              />
+              <Button
+                size="md"
+                loading={submitting}
+                loaderProps={{ type: "dots" }}
+                onClick={handlePasswordSignIn}
+              >
+                Email / Password でログイン
+              </Button>
+              <Divider label="production flow" labelPosition="center" />
+              <Text size="sm" c="dimmed">
+                本番環境では Google ログインのみを利用します。
+              </Text>
+            </Stack>
+          ) : (
+            <Button
+              size="md"
+              leftSection={<IconBrandGoogle size={18} />}
+              loading={submitting}
+              loaderProps={{ type: "dots" }}
+              onClick={handleGoogleSignIn}
+            >
+              Google でログイン
+            </Button>
+          )}
 
           <Box>
             <Group align="flex-start" wrap="nowrap">
