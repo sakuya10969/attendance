@@ -24,7 +24,9 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "create-system-admin": "tsx scripts/create-system-admin.ts"
+    "create-system-admin": "tsx scripts/create-system-admin.ts",
+    "seed-auth": "tsx scripts/seed-auth.ts",
+    "seed-app": "tsx scripts/seed-app.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
