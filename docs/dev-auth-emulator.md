@@ -95,6 +95,9 @@ pnpm run dev
 - `dev-admin@example.com`
 - `manager@example.com`
 - `member1@example.com`
+- `member2@example.com`
+- `member3@example.com`
+- `member4@example.com`
 
 ## 注意点
 
