@@ -10,3 +10,4 @@
 | [api-design.md](./api-design.md) | APIエンドポイント・機能一覧 |
 | [specs.md](./specs.md) | 仕様一覧 |
 | [tasks.md](./tasks.md) | タスク一覧 |
+| [dev-auth-emulator.md](./dev-auth-emulator.md) | Firebase Auth Emulator を使った開発手順 |
